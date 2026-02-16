@@ -69,7 +69,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="mc-hero">
+    <section id="hero" className="mc-hero">
       <div className="mc-hero__container">
         <div className="mc-hero__grid">
           {/* Left Content */}

@@ -1,0 +1,124 @@
+.patient-form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(10,25,47,0.1);
+}
+
+.patient-form-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text, #0A192F);
+  margin-bottom: 1.5rem;
+}
+
+.patient-field {
+  margin-bottom: 1.5rem;
+}
+
+.patient-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text, #0A192F);
+}
+
+.patient-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border, #E1E8F0);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.patient-input:hover {
+  border-color: var(--primary, #1E88E5);
+}
+
+.patient-input:focus {
+  outline: none;
+  border-color: var(--primary, #1E88E5);
+  box-shadow: 0 0 0 3px rgba(30,136,229,0.1);
+}
+
+.patient-input.error {
+  border-color: #EF4444;
+}
+
+.patient-error {
+  display: block;
+  color: #EF4444;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.patient-error-general {
+  background: #FEF2F2;
+  color: #EF4444;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.patient-terms {
+  margin-top: 1rem;
+}
+
+.patient-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light, #2D3A5E);
+  font-size: 0.9rem;
+}
+
+.patient-checkbox a {
+  color: var(--primary, #1E88E5);
+  text-decoration: none;
+}
+
+.patient-checkbox a:hover {
+  text-decoration: underline;
+}
+
+.patient-submit {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--primary, #1E88E5);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(30,136,229,0.3);
+  margin-top: 1.5rem;
+}
+
+.patient-submit:hover:not(:disabled) {
+  background: var(--primary-dark, #1565C0);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30,136,229,0.4);
+}
+
+.patient-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 642px) {
+  .patient-form-container {
+    padding: 1.5rem;
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
+  .patient-form-title {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+}

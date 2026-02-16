@@ -1,0 +1,78 @@
+.social-login {
+  margin-top: 2rem;
+}
+
+.social-divider {
+  position: relative;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.social-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border, #E1E8F0);
+  z-index: 1;
+}
+
+.social-divider-text {
+  position: relative;
+  z-index: 2;
+  background: white;
+  padding: 0 1rem;
+  color: var(--text-light, #2D3A5E);
+  font-size: 0.9rem;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: row;        /* change from column to row */
+  gap: 0.75rem;
+  justify-content: center;    /* optional, centers the buttons */
+  width: 100%;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  border: 1.5px solid var(--border, #E1E8F0);
+  border-radius: 12px;
+  background: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;                    /* each button takes equal width */
+  min-width: 0;     /* remove after testing */
+}
+
+.social-btn:hover {
+  background: var(--background-alt, #F8FAFE);
+  border-color: var(--primary, #1E88E5);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
+}
+
+.social-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.social-btn-google:hover {
+  border-color: #4285F4;
+}
+
+.social-btn-facebook:hover {
+  border-color: #1877F2;
+}
+
+.social-btn-apple:hover {
+  border-color: #000000;
+}

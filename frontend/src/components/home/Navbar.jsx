@@ -1,12 +1,28 @@
 // frontend/src/components/home/Navbar.jsx
-import React, { useState, useEffect } from 'react';
-import '../../styles/home/Navbar.css';
-import logoIcon from '../../assets/MC Logo.png'; // Assuming you have a logo icon
+import React, { useState, useEffect } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import "../../styles/home/Navbar.css";
+import logoIcon from "../../assets/MC Logo.png"; // Logo import
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Will be replaced with actual auth
+  const location = useLocation();
+
+  // Scroll to section handler
+  const scrollToSection = (sectionId) => {
+    // If not on home page, navigate to home first
+    if (location.pathname !== "/") {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsMobileMenuOpen(false);
+  };
 
   // Handle scroll effect
   useEffect(() => {
@@ -14,8 +30,8 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Close mobile menu on resize
@@ -26,64 +42,105 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMobileMenuOpen]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'How It Works', href: '/how-it-works' },
-    { name: 'Find Doctors', href: '/doctors' },
-    { name: 'Services', href: '/services' },
-    { name: 'Contact', href: '/contact' },
+    { name: "Home", href: "/", type: "route" },
+    { name: "How It Works", href: "how-it-works", type: "scroll" },
+    { name: "Find Doctors", href: "hero", type: "scroll" },
+    { name: "Services", href: "features", type: "scroll" },
+    { name: "Contact", href: "cta-section", type: "scroll" },
   ];
 
   return (
-    <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
+    <nav className={`navbar ${isScrolled ? "navbar-scrolled" : ""}`}>
       <div className="navbar-container">
         {/* Logo */}
-        <a href="/" className="navbar-logo">
-          <span className="logo-icon"><img src={logoIcon} alt="MediConnect Logo" /></span>
-          <span className="logo-text">Medi<span className="logo-highlight">Connect</span></span>
-        </a>
+        <Link to="/" className="navbar-logo">
+          <span className="logo-icon">
+            <img src={logoIcon} alt="MediConnect Logo" />
+          </span>
+          <span className="logo-text">
+            Medi<span className="logo-highlight">Connect</span>
+          </span>
+        </Link>
 
-        {/* Desktop Navigation - Now on the right with auth button */}
+        {/* Desktop Navigation */}
         <div className="navbar-right">
           <ul className="navbar-menu">
             {navLinks.map((link) => (
-              <li key={link.name} className="navbar-item">
-                <a href={link.href} className="navbar-link">
-                  {link.name}
-                </a>
+              <li
+                key={link.name}
+                className="navbar-item"
+                style={{ listStyle: "none", margin: 0, padding: 0 }}
+              >
+                {link.type === "scroll" ? (
+                  <button
+                    onClick={() => scrollToSection(link.href)}
+                    className="navbar-link navbar-link-btn"
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      font: "inherit",
+                      color: "inherit",
+                      padding: "0.5rem 1rem",
+                      display: "inline-block",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                    }}
+                  >
+                    {link.name}
+                  </button>
+                ) : (
+                  <NavLink
+                    to={link.href}
+                    className={({ isActive }) =>
+                      `navbar-link ${isActive ? "active" : ""}`
+                    }
+                    style={({ isActive }) => ({
+                      color: isActive ? "#1E88E5" : "#0A192F",
+                      textDecoration: "none",
+                      padding: "0.5rem 1rem",
+                      display: "inline-block",
+                      fontWeight: isActive ? "600" : "400",
+                      transition: "color 0.2s",
+                    })}
+                  >
+                    {link.name}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>
 
-          {/* Single Auth Button */}
+          {/* Single Auth Button - Links to Registration Page */}
           <div className="navbar-auth">
             {!isLoggedIn ? (
-              <a href="/login" className="nav-btn nav-btn-primary">
+              <Link to="/register" className="nav-btn nav-btn-primary">
                 Sign Up / Login
-              </a>
+              </Link>
             ) : (
-              <a href="/dashboard" className="nav-btn nav-btn-primary">
+              <Link to="/dashboard" className="nav-btn nav-btn-primary">
                 Dashboard
-              </a>
+              </Link>
             )}
           </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <button 
-          className={`mobile-menu-btn ${isMobileMenuOpen ? 'active' : ''}`}
+        <button
+          className={`mobile-menu-btn ${isMobileMenuOpen ? "active" : ""}`}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
           aria-expanded={isMobileMenuOpen}
@@ -93,47 +150,62 @@ const Navbar = () => {
           <span className="hamburger-line"></span>
         </button>
 
-        {/* Mobile Menu */}
-        <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
+        {/* Mobile Menu Overlay */}
+        <div
+          className={`mobile-menu-overlay ${isMobileMenuOpen ? "active" : ""}`}
+        >
           <div className="mobile-menu-container">
             <div className="mobile-menu-header">
-              <a href="/" className="mobile-logo" onClick={() => setIsMobileMenuOpen(false)}>
-                <span className="logo-icon">🏥</span>
+              <Link
+                to="/"
+                className="mobile-logo"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <img src={logoIcon} alt="MediConnect Logo" />
                 <span className="logo-text">MediConnect</span>
-              </a>
+              </Link>
             </div>
 
             <ul className="mobile-menu">
               {navLinks.map((link) => (
                 <li key={link.name} className="mobile-menu-item">
-                  <a 
-                    href={link.href} 
-                    className="mobile-menu-link"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.name}
-                  </a>
+                  {link.type === "scroll" ? (
+                    <button
+                      onClick={() => scrollToSection(link.href)}
+                      className="mobile-menu-link mobile-menu-link-btn"
+                    >
+                      {link.name}
+                    </button>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="mobile-menu-link"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
 
             <div className="mobile-menu-auth">
               {!isLoggedIn ? (
-                <a 
-                  href="/login" 
+                <Link
+                  to="/register"
                   className="mobile-btn mobile-btn-primary"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign Up / Login
-                </a>
+                </Link>
               ) : (
-                <a 
-                  href="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className="mobile-btn mobile-btn-primary"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Dashboard
-                </a>
+                </Link>
               )}
             </div>
           </div>

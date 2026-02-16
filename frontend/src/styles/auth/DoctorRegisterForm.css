@@ -1,0 +1,227 @@
+/* frontend/src/components/auth/DoctorRegisterForm.css */
+
+:root {
+  --doctor-primary: #00A896;      /* Accent color for doctor */
+  --doctor-primary-dark: #00897B;
+  --doctor-primary-light: #E0F2F1;
+  --doctor-text: #0A192F;
+  --doctor-text-light: #2D3A5E;
+  --doctor-border: #E1E8F0;
+  --doctor-background: #FFFFFF;
+  --doctor-background-alt: #F8FAFE;
+  --doctor-error: #EF4444;
+  --doctor-shadow: 0 10px 30px rgba(10,25,47,0.1);
+  --doctor-transition: all 0.2s ease;
+}
+
+.doctor-form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--doctor-background);
+  border-radius: 24px;
+  box-shadow: var(--doctor-shadow);
+}
+
+.doctor-form-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--doctor-text);
+  margin-bottom: 0.5rem;
+}
+
+.doctor-form-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--doctor-primary);
+  margin-top: 0.5rem;
+  border-radius: 2px;
+}
+
+.doctor-field {
+  margin-bottom: 1.5rem;
+}
+
+.doctor-label {
+  display: block;
+  font-weight: 600;
+  color: var(--doctor-text);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.doctor-input,
+.doctor-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--doctor-border);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: var(--doctor-text);
+  background: var(--doctor-background);
+  transition: var(--doctor-transition);
+  font-family: inherit;
+}
+
+.doctor-input:hover,
+.doctor-select:hover {
+  border-color: var(--doctor-primary);
+}
+
+.doctor-input:focus,
+.doctor-select:focus {
+  outline: none;
+  border-color: var(--doctor-primary);
+  box-shadow: 0 0 0 3px var(--doctor-primary-light);
+}
+
+.doctor-input.error,
+.doctor-select.error {
+  border-color: var(--doctor-error);
+}
+
+.doctor-error {
+  display: block;
+  color: var(--doctor-error);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.doctor-error-general {
+  background: #FEF2F2;
+  color: var(--doctor-error);
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #FECACA;
+}
+
+/* Specialty select specific */
+.doctor-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232D3A5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 16px;
+  padding-right: 2.5rem;
+}
+
+/* Terms checkbox */
+.doctor-terms {
+  margin-top: 1rem;
+}
+
+.doctor-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--doctor-text-light);
+  font-size: 0.9rem;
+}
+
+.doctor-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--doctor-primary);
+}
+
+.doctor-checkbox a {
+  color: var(--doctor-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.doctor-checkbox a:hover {
+  text-decoration: underline;
+}
+
+/* Submit button */
+.doctor-submit {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--doctor-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--doctor-transition);
+  box-shadow: 0 4px 10px rgba(0,168,150,0.3);
+  margin-top: 1.5rem;
+}
+
+.doctor-submit:hover:not(:disabled) {
+  background: var(--doctor-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,168,150,0.4);
+}
+
+.doctor-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive for ≤642px */
+@media (max-width: 642px) {
+  .doctor-form-container {
+    padding: 1.5rem;
+    max-width: 100%;
+    box-shadow: none;
+    border: 1px solid var(--doctor-border);
+  }
+
+  .doctor-form-title {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .doctor-form-title::after {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .doctor-field {
+    margin-bottom: 1.25rem;
+  }
+
+  .doctor-label {
+    font-size: 0.9rem;
+  }
+
+  .doctor-input,
+  .doctor-select {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .doctor-checkbox {
+    font-size: 0.85rem;
+  }
+
+  .doctor-submit {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Animation for form appearance */
+@keyframes doctorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.doctor-form-container {
+  animation: doctorFadeIn 0.3s ease forwards;
+}

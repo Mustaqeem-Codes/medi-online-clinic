@@ -1,20 +1,21 @@
 // frontend/src/components/home/CTASection.jsx
-import React from 'react';
-import '../../styles/home/CTASection.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "../../styles/home/CTASection.css";
 
 const CTASection = () => {
   return (
-    <section className="cta-section">
+    <section id="cta-section" className="cta-section">
       <div className="cta-container">
         {/* Left Content */}
         <div className="cta-content-wrapper">
           <span className="cta-badge">Ready to Start?</span>
           <h2 className="cta-heading">
-            Your Health Journey 
+            Your Health Journey
             <span className="cta-heading-highlight"> Starts Here</span>
           </h2>
           <p className="cta-description">
-            Join thousands of satisfied patients and doctors who have already 
+            Join thousands of satisfied patients and doctors who have already
             transformed their healthcare experience with MediConnect.
           </p>
 
@@ -40,14 +41,20 @@ const CTASection = () => {
 
           {/* CTA Buttons */}
           <div className="cta-buttons-wrapper">
-            <a href="/register/patient" className="cta-button cta-button-primary">
+            <Link
+              to="/register?role=patient"
+              className="cta-button cta-button-primary"
+            >
               <span className="cta-button-text">Register as Patient</span>
               <span className="cta-button-icon">→</span>
-            </a>
-            <a href="/register/doctor" className="cta-button cta-button-secondary">
+            </Link>
+            <Link
+              to="/register?role=doctor"
+              className="cta-button cta-button-secondary"
+            >
               <span className="cta-button-text">Join as Doctor</span>
               <span className="cta-button-icon">→</span>
-            </a>
+            </Link>
           </div>
 
           {/* Trust Indicators */}

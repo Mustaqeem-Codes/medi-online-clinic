@@ -1,6 +1,7 @@
 // frontend/src/components/home/Stats.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import '../../styles/home/Stats.css';
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import "../../styles/home/Stats.css";
 
 const Stats = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,7 +11,7 @@ const Stats = () => {
     appointments: 0,
     cities: 0,
     countries: 0,
-    satisfaction: 0
+    satisfaction: 0,
   });
 
   const statsRef = useRef(null);
@@ -22,7 +23,7 @@ const Stats = () => {
     appointments: 100000,
     cities: 150,
     countries: 25,
-    satisfaction: 98
+    satisfaction: 98,
   };
 
   // Intersection Observer for scroll animation
@@ -34,7 +35,7 @@ const Stats = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     if (statsRef.current) {
@@ -52,20 +53,38 @@ const Stats = () => {
     const steps = 60;
     const increments = {};
 
-    Object.keys(targets).forEach(key => {
+    Object.keys(targets).forEach((key) => {
       increments[key] = targets[key] / steps;
     });
 
     let currentStep = 0;
     const timer = setInterval(() => {
       if (currentStep < steps) {
-        setCounts(prev => ({
-          patients: Math.min(Math.floor(prev.patients + increments.patients), targets.patients),
-          doctors: Math.min(Math.floor(prev.doctors + increments.doctors), targets.doctors),
-          appointments: Math.min(Math.floor(prev.appointments + increments.appointments), targets.appointments),
-          cities: Math.min(Math.floor(prev.cities + increments.cities), targets.cities),
-          countries: Math.min(Math.floor(prev.countries + increments.countries), targets.countries),
-          satisfaction: Math.min(Math.floor(prev.satisfaction + increments.satisfaction), targets.satisfaction)
+        setCounts((prev) => ({
+          patients: Math.min(
+            Math.floor(prev.patients + increments.patients),
+            targets.patients,
+          ),
+          doctors: Math.min(
+            Math.floor(prev.doctors + increments.doctors),
+            targets.doctors,
+          ),
+          appointments: Math.min(
+            Math.floor(prev.appointments + increments.appointments),
+            targets.appointments,
+          ),
+          cities: Math.min(
+            Math.floor(prev.cities + increments.cities),
+            targets.cities,
+          ),
+          countries: Math.min(
+            Math.floor(prev.countries + increments.countries),
+            targets.countries,
+          ),
+          satisfaction: Math.min(
+            Math.floor(prev.satisfaction + increments.satisfaction),
+            targets.satisfaction,
+          ),
         }));
         currentStep++;
       } else {
@@ -93,7 +112,7 @@ const Stats = () => {
         <div className="mc-stats__header">
           <span className="mc-stats__badge">Our Impact</span>
           <h2 className="mc-stats__title">
-            Growing Stronger 
+            Growing Stronger
             <span className="mc-stats__title-highlight"> Every Day</span>
           </h2>
           <p className="mc-stats__subtitle">
@@ -126,14 +145,16 @@ const Stats = () => {
                   cy="60"
                   style={{
                     strokeDasharray: `${2 * Math.PI * 52}`,
-                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - getPercentage(counts.patients, targets.patients) / 100)}`
+                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - getPercentage(counts.patients, targets.patients) / 100)}`,
                   }}
                 />
               </svg>
               <span className="mc-stats__ring-icon">👥</span>
             </div>
             <div className="mc-stats__content">
-              <h3 className="mc-stats__value">{formatNumber(counts.patients)}+</h3>
+              <h3 className="mc-stats__value">
+                {formatNumber(counts.patients)}+
+              </h3>
               <p className="mc-stats__label">Happy Patients</p>
               <div className="mc-stats__trend mc-stats__trend--positive">
                 <span className="mc-stats__trend-icon">↑</span>
@@ -165,14 +186,16 @@ const Stats = () => {
                   cy="60"
                   style={{
                     strokeDasharray: `${2 * Math.PI * 52}`,
-                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - getPercentage(counts.doctors, targets.doctors) / 100)}`
+                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - getPercentage(counts.doctors, targets.doctors) / 100)}`,
                   }}
                 />
               </svg>
               <span className="mc-stats__ring-icon">👨‍⚕️</span>
             </div>
             <div className="mc-stats__content">
-              <h3 className="mc-stats__value">{formatNumber(counts.doctors)}+</h3>
+              <h3 className="mc-stats__value">
+                {formatNumber(counts.doctors)}+
+              </h3>
               <p className="mc-stats__label">Verified Doctors</p>
               <div className="mc-stats__trend mc-stats__trend--positive">
                 <span className="mc-stats__trend-icon">↑</span>
@@ -204,14 +227,16 @@ const Stats = () => {
                   cy="60"
                   style={{
                     strokeDasharray: `${2 * Math.PI * 52}`,
-                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - getPercentage(counts.appointments, targets.appointments) / 100)}`
+                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - getPercentage(counts.appointments, targets.appointments) / 100)}`,
                   }}
                 />
               </svg>
               <span className="mc-stats__ring-icon">📅</span>
             </div>
             <div className="mc-stats__content">
-              <h3 className="mc-stats__value">{formatNumber(counts.appointments)}+</h3>
+              <h3 className="mc-stats__value">
+                {formatNumber(counts.appointments)}+
+              </h3>
               <p className="mc-stats__label">Appointments</p>
               <div className="mc-stats__trend mc-stats__trend--positive">
                 <span className="mc-stats__trend-icon">↑</span>
@@ -269,7 +294,7 @@ const Stats = () => {
                   cy="60"
                   style={{
                     strokeDasharray: `${2 * Math.PI * 52}`,
-                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - counts.satisfaction / 100)}`
+                    strokeDashoffset: `${2 * Math.PI * 52 * (1 - counts.satisfaction / 100)}`,
                   }}
                 />
               </svg>
@@ -280,24 +305,30 @@ const Stats = () => {
               <p className="mc-stats__label">Satisfaction Rate</p>
               <div className="mc-stats__trend mc-stats__trend--positive">
                 <span className="mc-stats__trend-icon">↑</span>
-                <span className="mc-stats__trend-text">Highest in industry</span>
+                <span className="mc-stats__trend-text">
+                  Highest in industry
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Achievement Banner */}
+
         <div className="mc-stats__achievement">
           <div className="mc-stats__achievement-content">
-            <h3 className="mc-stats__achievement-title">Join our growing community</h3>
+            <h3 className="mc-stats__achievement-title">
+              Join our growing community
+            </h3>
             <p className="mc-stats__achievement-text">
-              Be part of the healthcare revolution. Thousands of patients and doctors 
-              have already made the switch to smarter, more convenient healthcare.
+              Be part of the healthcare revolution. Thousands of patients and
+              doctors have already made the switch to smarter, more convenient
+              healthcare.
             </p>
-            <button className="mc-stats__achievement-btn">
+            <Link to="/frontend/src/Pages/RegisterPage.jsx" className="mc-stats__achievement-btn">
               Get Started Today
               <span className="mc-stats__btn-icon">→</span>
-            </button>
+            </Link>
           </div>
           <div className="mc-stats__achievement-pattern"></div>
         </div>

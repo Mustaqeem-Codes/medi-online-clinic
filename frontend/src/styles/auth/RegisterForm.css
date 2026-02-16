@@ -1,0 +1,230 @@
+/* frontend/src/components/auth/RegisterForm.css */
+
+.register-form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(10,25,47,0.1);
+}
+
+.register-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text, #0A192F);
+  margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+  color: var(--text-light, #2D3A5E);
+  margin-bottom: 2rem;
+}
+
+.register-field {
+  margin-bottom: 1.5rem;
+}
+
+.register-label {
+  display: block;
+  font-weight: 600;
+  color: var(--text, #0A192F);
+  margin-bottom: 0.5rem;
+}
+
+.register-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border, #E1E8F0);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.register-input:hover {
+  border-color: var(--primary, #1E88E5);
+}
+
+.register-input:focus {
+  outline: none;
+  border-color: var(--primary, #1E88E5);
+  box-shadow: 0 0 0 3px rgba(30,136,229,0.1);
+}
+
+.register-input.error {
+  border-color: #EF4444;
+}
+
+.register-error {
+  display: block;
+  color: #EF4444;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.register-error-general {
+  background: #FEF2F2;
+  color: #EF4444;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #FECACA;
+}
+
+/* Role selection */
+.register-role-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.register-role-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1.5px solid var(--border, #E1E8F0);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.register-role-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.register-role-label span {
+  font-weight: 500;
+  color: var(--text, #0A192F);
+}
+
+.register-role-label.selected {
+  border-color: var(--primary, #1E88E5);
+  background: var(--primary-light, #E3F2FD);
+}
+
+.register-role-label:hover {
+  border-color: var(--primary, #1E88E5);
+}
+
+/* Terms checkbox */
+.register-terms {
+  margin-top: 1rem;
+}
+
+.register-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--text-light, #2D3A5E);
+  font-size: 0.9rem;
+}
+
+.register-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.register-checkbox a {
+  color: var(--primary, #1E88E5);
+  text-decoration: none;
+}
+
+.register-checkbox a:hover {
+  text-decoration: underline;
+}
+
+/* Submit button */
+.register-submit {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--primary, #1E88E5);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(30,136,229,0.3);
+  margin-top: 1.5rem;
+}
+
+.register-submit:hover:not(:disabled) {
+  background: var(--primary-dark, #1565C0);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30,136,229,0.4);
+}
+
+.register-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive for <=642px */
+@media (max-width: 642px) {
+  .register-form-container {
+    padding: 1.5rem;
+    max-width: 100%;
+    box-shadow: none;
+    border: 1px solid var(--border, #E1E8F0);
+  }
+
+  .register-title {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .register-subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .register-field {
+    margin-bottom: 1.25rem;
+  }
+
+  .register-label {
+    font-size: 0.9rem;
+  }
+
+  .register-input {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .register-role-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .register-role-label {
+    padding: 0.7rem;
+  }
+
+  .register-checkbox {
+    font-size: 0.85rem;
+  }
+
+  .register-submit {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .register-error-general {
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .register-error {
+    font-size: 0.8rem;
+  }
+}

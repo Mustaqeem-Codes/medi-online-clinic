@@ -1,0 +1,29 @@
+/* frontend/src/components/auth/LoginPrompt.css */
+
+.login-prompt {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.login-prompt-text {
+  color: var(--text-light, #2D3A5E);
+  font-size: 0.95rem;
+}
+
+.login-prompt-link {
+  color: var(--primary, #1E88E5);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.login-prompt-link:hover {
+  color: var(--primary-dark, #1565C0);
+  text-decoration: underline;
+}
+
+@media (max-width: 642px) {
+  .login-prompt-text {
+    font-size: 0.9rem;
+  }
+}

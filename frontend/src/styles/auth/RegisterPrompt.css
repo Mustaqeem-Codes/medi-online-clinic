@@ -1,0 +1,21 @@
+.register-prompt {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.register-prompt-text {
+  color: var(--text-light, #2D3A5E);
+  font-size: 0.95rem;
+}
+
+.register-prompt-link {
+  color: var(--primary, #1E88E5);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.register-prompt-link:hover {
+  color: var(--primary-dark, #1565C0);
+  text-decoration: underline;
+}

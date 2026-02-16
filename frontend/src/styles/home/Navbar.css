@@ -117,6 +117,8 @@ body {
 
 .navbar-item {
   position: relative;
+  border: none;
+  background-color: transparent;
 }
 
 .navbar-link {

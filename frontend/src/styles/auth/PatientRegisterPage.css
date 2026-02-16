@@ -1,0 +1,104 @@
+.patient-register-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--background-alt, #F8FAFE) 0%, var(--background, #FFFFFF) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.patient-register-container {
+  display: flex;
+  max-width: 1300px;
+  width: 100%;
+  background: white;
+  border-radius: 32px;
+  box-shadow: var(--shadow-xl, 0 20px 40px rgba(10,25,47,0.1));
+  overflow: hidden;
+}
+
+.patient-register-brand {
+  flex: 1.2;
+  background: linear-gradient(135deg, var(--primary, #1E88E5), var(--primary-dark, #1565C0));
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.patient-back-button {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+.patient-back-button:hover {
+  color: white;
+}
+
+.patient-brand-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.patient-logo {
+  width: 60px;
+  margin-bottom: 2rem;
+  background: white;
+  border-radius: 12px;
+  padding: 0.5rem;
+}
+
+.patient-brand-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.patient-brand-subtitle {
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.patient-brand-features .brand-feature {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.patient-register-form-col {
+  flex: 1.8;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .patient-register-container {
+    flex-direction: column;
+  }
+  .patient-register-brand {
+    padding: 2rem;
+    text-align: center;
+  }
+  .patient-brand-content {
+    align-items: center;
+  }
+  .patient-brand-subtitle {
+    text-align: center;
+    max-width: 100%;
+  }
+  .patient-register-form-col {
+    padding: 2rem;
+  }
+}
