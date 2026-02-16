@@ -40,9 +40,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', href: '/' },
+    { name: 'How It Works', href: '/how-it-works' },
     { name: 'Find Doctors', href: '/doctors' },
     { name: 'Services', href: '/services' },
-    { name: 'How It Works', href: '/how-it-works' },
     { name: 'Contact', href: '/contact' },
   ];
 
