@@ -9,7 +9,6 @@ import Testimonials from './components/home/Testimonials';
 import Stats from './components/home/Stats';
 import CTASection from './components/home/CTASection';
 import Footer from './components/home/Footer';
-import './App.css';
 
 function App() {
   return (
