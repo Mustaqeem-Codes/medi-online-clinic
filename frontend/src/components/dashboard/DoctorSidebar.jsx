@@ -1,7 +1,15 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import '../../styles/dashboard/DoctorSidebar.css';
 
 const DoctorSidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login?role=doctor');
+  };
+
   return (
     <aside className="mc-doctor-sidebar">
       <div className="mc-doctor-sidebar__brand">
@@ -28,8 +36,8 @@ const DoctorSidebar = () => {
       </nav>
 
       <div className="mc-doctor-sidebar__footer">
-        <p>Need help?</p>
-        <button type="button" className="mc-doctor-sidebar__support">Contact Support</button>
+        <p>Account</p>
+        <button type="button" className="mc-doctor-sidebar__logout" onClick={handleLogout}>Logout</button>
       </div>
     </aside>
   );

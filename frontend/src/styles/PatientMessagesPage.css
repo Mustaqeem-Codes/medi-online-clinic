@@ -1,7 +1,7 @@
 .mc-patient-messages {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 260px 1fr;
   background: #F5F8FB;
 }
 
@@ -49,6 +49,54 @@
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.mc-patient-messages__state,
+.mc-patient-messages__error {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border, #E1E8F0);
+  margin-bottom: 1.5rem;
+}
+
+.mc-patient-messages__error {
+  border-color: #FECACA;
+  background: #FEF2F2;
+  color: #B91C1C;
+}
+
+.mc-patient-messages__list {
+  width: 100%;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.mc-patient-messages__item {
+  width: 100%;
+  border: 1px solid var(--border, #E1E8F0);
+  background: #F8FAFE;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text, #0A192F);
+}
+
+.mc-patient-messages__item span {
+  font-size: 0.85rem;
+  color: var(--text-light, #2D3A5E);
+}
+
+.mc-patient-messages__item-action {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1E88E5;
 }
 
 @media (max-width: 960px) {

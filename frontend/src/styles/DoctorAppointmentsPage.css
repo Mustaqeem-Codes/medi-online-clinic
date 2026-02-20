@@ -1,7 +1,7 @@
 .mc-doctor-appointments {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 260px 1fr;
   background: #F5F8FB;
 }
 
@@ -87,6 +87,46 @@
   border-radius: 999px;
 }
 
+.mc-doctor-appointments__actions {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: end;
+}
+
+.mc-doctor-appointments__buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mc-doctor-appointments__btn {
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.mc-doctor-appointments__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mc-doctor-appointments__btn--confirm {
+  background: #1E88E5;
+  color: white;
+}
+
+.mc-doctor-appointments__btn--reject {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.mc-doctor-appointments__btn--message {
+  background: #E2E8F0;
+  color: #0A192F;
+}
+
 .mc-doctor-appointments__status--confirmed {
   background: #ECFDF3;
   color: #047857;
@@ -98,6 +138,11 @@
 }
 
 .mc-doctor-appointments__status--cancelled {
+  background: #FEF2F2;
+  color: #B91C1C;
+}
+
+.mc-doctor-appointments__status--rejected {
   background: #FEF2F2;
   color: #B91C1C;
 }
@@ -120,5 +165,9 @@
 
   .mc-doctor-appointments__time {
     text-align: left;
+  }
+
+  .mc-doctor-appointments__actions {
+    justify-items: start;
   }
 }

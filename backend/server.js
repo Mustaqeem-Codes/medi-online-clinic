@@ -6,6 +6,7 @@ const { pool, initDB } = require('./config/database');
 const patientRoutes = require('./routes/patientRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const messageRoutes = require('./routes/messageRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/patients', patientRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Initialize database connection
 let dbConnected = false;
@@ -80,7 +82,9 @@ app.use((req, res) => {
       'POST /api/appointments',
       'GET /api/appointments/patient',
       'GET /api/appointments/doctor',
-      'PUT /api/appointments/:id/status'
+      'PUT /api/appointments/:id/status',
+      'GET /api/messages/appointments/:appointmentId',
+      'POST /api/messages/appointments/:appointmentId'
     ]
   });
 });

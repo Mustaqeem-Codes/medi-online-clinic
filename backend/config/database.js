@@ -38,6 +38,7 @@ const createTables = async () => {
         email VARCHAR(255) UNIQUE NOT NULL,
         phone VARCHAR(20) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
+        location TEXT,
         date_of_birth DATE,
         is_verified BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -45,6 +46,8 @@ const createTables = async () => {
       )
     `);
     console.log('✅ Patients table ready');
+
+    await pool.query('ALTER TABLE patients ADD COLUMN IF NOT EXISTS location TEXT');
 
     // Doctors table
     await pool.query(`
@@ -56,6 +59,7 @@ const createTables = async () => {
         password_hash VARCHAR(255) NOT NULL,
         license_number VARCHAR(100) UNIQUE NOT NULL,
         specialty VARCHAR(100) NOT NULL,
+        location TEXT,
         is_verified BOOLEAN DEFAULT FALSE,
         is_approved BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -63,6 +67,8 @@ const createTables = async () => {
       )
     `);
     console.log('✅ Doctors table ready');
+
+    await pool.query('ALTER TABLE doctors ADD COLUMN IF NOT EXISTS location TEXT');
 
     // Appointments table
     await pool.query(`
@@ -79,6 +85,20 @@ const createTables = async () => {
       )
     `);
     console.log('✅ Appointments table ready');
+
+    // Messages table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+        id SERIAL PRIMARY KEY,
+        appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+        sender_role VARCHAR(20) NOT NULL,
+        sender_id INTEGER NOT NULL,
+        body TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_messages_appointment_id ON messages(appointment_id)');
+    console.log('✅ Messages table ready');
 
     return true;
   } catch (error) {

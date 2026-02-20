@@ -5,18 +5,18 @@ const bcrypt = require('bcryptjs');
 class Patient {
   // Create a new patient
   static async create(patientData) {
-    const { name, email, phone, password, date_of_birth } = patientData;
+    const { name, email, phone, password, date_of_birth, location } = patientData;
     
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
     const query = `
-      INSERT INTO patients (name, email, phone, password_hash, date_of_birth)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING id, name, email, phone, date_of_birth, is_verified, created_at
+      INSERT INTO patients (name, email, phone, password_hash, date_of_birth, location)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id, name, email, phone, date_of_birth, location, is_verified, created_at
     `;
-    const values = [name, email, phone, password_hash, date_of_birth || null];
+    const values = [name, email, phone, password_hash, date_of_birth || null, location || null];
 
     try {
       const result = await pool.query(query, values);
@@ -50,24 +50,25 @@ class Patient {
 
   // Find patient by ID
   static async findById(id) {
-    const query = 'SELECT id, name, email, phone, date_of_birth, is_verified, created_at FROM patients WHERE id = $1';
+    const query = 'SELECT id, name, email, phone, date_of_birth, location, is_verified, created_at FROM patients WHERE id = $1';
     const result = await pool.query(query, [id]);
     return result.rows[0];
   }
 
   // Update patient profile
   static async update(id, updateData) {
-    const { name, phone, date_of_birth } = updateData;
+    const { name, phone, date_of_birth, location } = updateData;
     const query = `
       UPDATE patients
       SET name = $1,
           phone = $2,
           date_of_birth = $3,
+          location = $4,
           updated_at = CURRENT_TIMESTAMP
-      WHERE id = $4
-      RETURNING id, name, email, phone, date_of_birth, is_verified, created_at, updated_at
+      WHERE id = $5
+      RETURNING id, name, email, phone, date_of_birth, location, is_verified, created_at, updated_at
     `;
-    const values = [name, phone, date_of_birth || null, id];
+    const values = [name, phone, date_of_birth || null, location || null, id];
 
     try {
       const result = await pool.query(query, values);

@@ -1,6 +1,6 @@
 // frontend/src/pages/RegisterPage.jsx
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import PatientRegisterForm from '../components/auth/PatientRegisterForm';
 import DoctorRegisterForm from '../components/auth/DoctorRegisterForm';
 import SocialLoginButtons from '../components/auth/SocialLoginButtons';
@@ -9,11 +9,20 @@ import logoImage from '../assets/MC Logo.png';
 import '../styles/RegisterPage.css';
 
 const RegisterPage = () => {
+  const location = useLocation();
   const [role, setRole] = useState('patient'); // 'patient' or 'doctor'
 
   const handleRoleChange = (newRole) => {
     setRole(newRole);
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const roleParam = params.get('role');
+    if (roleParam === 'patient' || roleParam === 'doctor') {
+      setRole(roleParam);
+    }
+  }, [location.search]);
 
   return (
     <div className="register-page">

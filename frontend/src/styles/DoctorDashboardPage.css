@@ -1,7 +1,7 @@
 .mc-doctor-dashboard-layout {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 260px 1fr;
   background: linear-gradient(180deg, rgba(0, 168, 150, 0.08) 0%, rgba(30, 136, 229, 0.04) 100%);
   color: var(--text, #0A192F);
 }

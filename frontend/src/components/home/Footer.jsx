@@ -9,32 +9,32 @@ const Footer = () => {
 
   const footerLinks = {
     company: [
-      { name: 'About Us', url: '/about' },
-      { name: 'Careers', url: '/careers' },
-      { name: 'Blog', url: '/blog' },
-      { name: 'Press', url: '/press' },
-      { name: 'Contact', url: '/contact' }
+      { name: 'About Us', url: '' },
+      { name: 'Careers', url: '' },
+      { name: 'Blog', url: '' },
+      { name: 'Press', url: '' },
+      { name: 'Contact', url: '' }
     ],
     patients: [
       { name: 'Find Doctors', url: '/doctors' },
-      { name: 'Book Appointment', url: '/appointments/new' },
-      { name: 'Health Articles', url: '/articles' },
-      { name: 'Patient FAQs', url: '/faq/patients' },
-      { name: 'Insurance Info', url: '/insurance' }
+      { name: 'Book Appointment', url: '/doctors' },
+      { name: 'Health Articles', url: '' },
+      { name: 'Patient FAQs', url: '' },
+      { name: 'Insurance Info', url: '' }
     ],
     doctors: [
-      { name: 'Join as Doctor', url: '/register/doctor' },
-      { name: 'Doctor Login', url: '/login/doctor' },
-      { name: 'Practice Dashboard', url: '/doctor/dashboard' },
-      { name: 'Doctor FAQs', url: '/faq/doctors' },
-      { name: 'Support', url: '/support/doctors' }
+      { name: 'Join as Doctor', url: '/register?role=doctor' },
+      { name: 'Doctor Login', url: '/login?role=doctor' },
+      { name: 'Practice Dashboard', url: '/dashboard/doctor' },
+      { name: 'Doctor FAQs', url: '' },
+      { name: 'Support', url: '' }
     ],
     legal: [
-      { name: 'Terms of Service', url: '/legal/terms' },
-      { name: 'Privacy Policy', url: '/legal/privacy' },
-      { name: 'Cookie Policy', url: '/legal/cookies' },
-      { name: 'HIPAA Compliance', url: '/legal/hipaa' },
-      { name: 'Accessibility', url: '/legal/accessibility' }
+      { name: 'Terms of Service', url: '' },
+      { name: 'Privacy Policy', url: '' },
+      { name: 'Cookie Policy', url: '' },
+      { name: 'HIPAA Compliance', url: '' },
+      { name: 'Accessibility', url: '' }
     ]
   };
 
@@ -47,8 +47,8 @@ const Footer = () => {
   ];
 
   const appStores = [
-    { name: 'App Store', icon: '🍎', url: '#' },
-    { name: 'Google Play', icon: '📱', url: '#' }
+    { name: 'App Store', icon: '🍎', url: '' },
+    { name: 'Google Play', icon: '📱', url: '' }
   ];
 
   return (

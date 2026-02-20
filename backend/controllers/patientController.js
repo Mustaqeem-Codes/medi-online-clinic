@@ -14,13 +14,13 @@ const generateToken = (id) => {
 // @access  Public
 const registerPatient = async (req, res) => {
   try {
-    const { name, email, phone, password, date_of_birth } = req.body;
+    const { name, email, phone, password, date_of_birth, location } = req.body;
 
     // Basic validation
-    if (!name || !email || !phone || !password) {
+    if (!name || !email || !phone || !password || !location) {
       return res.status(400).json({ 
         success: false, 
-        error: 'Please provide name, email, phone and password' 
+        error: 'Please provide name, email, phone, password, and location' 
       });
     }
 
@@ -47,7 +47,8 @@ const registerPatient = async (req, res) => {
       email,
       phone,
       password,
-      date_of_birth
+      date_of_birth,
+      location
     });
 
     // Generate token
@@ -61,6 +62,7 @@ const registerPatient = async (req, res) => {
         email: patient.email,
         phone: patient.phone,
         date_of_birth: patient.date_of_birth,
+        location: patient.location,
         is_verified: patient.is_verified,
         role: 'patient',
         token
@@ -126,6 +128,7 @@ const loginPatient = async (req, res) => {
         email: patient.email,
         phone: patient.phone,
         date_of_birth: patient.date_of_birth,
+        location: patient.location,
         is_verified: patient.is_verified,
         role: 'patient',
         token
@@ -169,19 +172,20 @@ const getProfile = async (req, res) => {
 // @access  Private
 const updateProfile = async (req, res) => {
   try {
-    const { name, phone, date_of_birth } = req.body;
+    const { name, phone, date_of_birth, location } = req.body;
 
-    if (!name || !phone) {
+    if (!name || !phone || !location) {
       return res.status(400).json({
         success: false,
-        error: 'Please provide name and phone'
+        error: 'Please provide name, phone, and location'
       });
     }
 
     const updated = await Patient.update(req.user.id, {
       name,
       phone,
-      date_of_birth
+      date_of_birth,
+      location
     });
 
     if (!updated) {

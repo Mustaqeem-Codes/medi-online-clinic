@@ -7,7 +7,9 @@ import heroImage from '../../assets/hero-image.webp';
 const Hero = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
-  const [location, setLocation] = useState('');
+  const [country, setCountry] = useState('USA');
+  const [city, setCity] = useState('New York');
+  const [locationLine, setLocationLine] = useState('');
   const [stats, setStats] = useState({
     doctors: 0,
     patients: 0,
@@ -67,6 +69,16 @@ const Hero = () => {
     'General Physician'
   ];
 
+  const countries = ['USA', 'Canada', 'UK', 'India', 'UAE'];
+  const citiesByCountry = {
+    USA: ['New York', 'Los Angeles', 'Chicago'],
+    Canada: ['Toronto', 'Vancouver', 'Montreal'],
+    UK: ['London', 'Manchester', 'Birmingham'],
+    India: ['Mumbai', 'Delhi', 'Bengaluru'],
+    UAE: ['Dubai', 'Abu Dhabi', 'Sharjah']
+  };
+  const cityOptions = citiesByCountry[country] || [];
+
   useEffect(() => {
     const loadDoctors = async () => {
       try {
@@ -87,7 +99,9 @@ const Hero = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     const normalizedName = searchQuery.trim().toLowerCase();
-    const normalizedLocation = location.trim().toLowerCase();
+    const normalizedCountry = country.trim().toLowerCase();
+    const normalizedCity = city.trim().toLowerCase();
+    const normalizedLocation = locationLine.trim().toLowerCase();
 
     const results = doctors.filter((doctor) => {
       const matchesName = normalizedName
@@ -96,11 +110,18 @@ const Hero = () => {
       const matchesSpecialty = selectedSpecialty
         ? doctor.specialty === selectedSpecialty
         : true;
+      const locationValue = (doctor.location || '').toLowerCase();
+      const matchesCountry = normalizedCountry
+        ? locationValue.includes(normalizedCountry)
+        : true;
+      const matchesCity = normalizedCity
+        ? locationValue.includes(normalizedCity)
+        : true;
       const matchesLocation = normalizedLocation
-        ? (doctor.location || '').toLowerCase().includes(normalizedLocation)
+        ? locationValue.includes(normalizedLocation)
         : true;
 
-      return matchesName && matchesSpecialty && matchesLocation;
+      return matchesName && matchesSpecialty && matchesCountry && matchesCity && matchesLocation;
     });
 
     setSearchResults(results);
@@ -150,16 +171,55 @@ const Hero = () => {
                 </div>
 
                 <div className="mc-hero__search-field">
-                  <label htmlFor="location" className="mc-hero__field-label">
+                  <label htmlFor="country" className="mc-hero__field-label">
+                    <span className="mc-hero__label-icon">🌍</span>
+                    Country
+                  </label>
+                  <select
+                    id="country"
+                    value={country}
+                    onChange={(e) => {
+                      const nextCountry = e.target.value;
+                      const nextCity = citiesByCountry[nextCountry]?.[0] || '';
+                      setCountry(nextCountry);
+                      setCity(nextCity);
+                    }}
+                    className="mc-hero__search-select"
+                  >
+                    {countries.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mc-hero__search-field">
+                  <label htmlFor="city" className="mc-hero__field-label">
                     <span className="mc-hero__label-icon">📍</span>
+                    City
+                  </label>
+                  <select
+                    id="city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="mc-hero__search-select"
+                  >
+                    {cityOptions.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mc-hero__search-field">
+                  <label htmlFor="location" className="mc-hero__field-label">
+                    <span className="mc-hero__label-icon">🧭</span>
                     Location
                   </label>
                   <input
                     type="text"
                     id="location"
-                    placeholder="Enter city or zip code"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Enter address or area"
+                    value={locationLine}
+                    onChange={(e) => setLocationLine(e.target.value)}
                     className="mc-hero__search-input"
                   />
                 </div>

@@ -5,18 +5,18 @@ const bcrypt = require('bcryptjs');
 class Doctor {
   // Create a new doctor
   static async create(doctorData) {
-    const { name, email, phone, password, license_number, specialty } = doctorData;
+    const { name, email, phone, password, license_number, specialty, location } = doctorData;
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
     const query = `
-      INSERT INTO doctors (name, email, phone, password_hash, license_number, specialty)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, name, email, phone, license_number, specialty, is_verified, is_approved, created_at
+      INSERT INTO doctors (name, email, phone, password_hash, license_number, specialty, location)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, name, email, phone, license_number, specialty, location, is_verified, is_approved, created_at
     `;
-    const values = [name, email, phone, password_hash, license_number, specialty];
+    const values = [name, email, phone, password_hash, license_number, specialty, location || null];
 
     try {
       const result = await pool.query(query, values);
@@ -58,7 +58,7 @@ class Doctor {
 
   // Find doctor by ID
   static async findById(id) {
-    const query = 'SELECT id, name, email, phone, license_number, specialty, is_verified, is_approved, created_at FROM doctors WHERE id = $1';
+    const query = 'SELECT id, name, email, phone, license_number, specialty, location, is_verified, is_approved, created_at FROM doctors WHERE id = $1';
     const result = await pool.query(query, [id]);
     return result.rows[0];
   }
@@ -66,7 +66,7 @@ class Doctor {
   // List all doctors (public fields)
   static async findAll() {
     const query = `
-      SELECT id, name, specialty, is_verified, is_approved
+      SELECT id, name, specialty, location, is_verified, is_approved
       FROM doctors
       ORDER BY created_at DESC
     `;

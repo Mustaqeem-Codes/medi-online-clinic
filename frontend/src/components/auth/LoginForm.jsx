@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/auth/LoginForm.css';
 
@@ -16,6 +16,14 @@ const LoginForm = ({ onLoginSuccess }) => {
 
   // Show success message from registration if present
   const successMessage = location.state?.message;
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const roleParam = params.get('role');
+    if (roleParam === 'patient' || roleParam === 'doctor') {
+      setRole(roleParam);
+    }
+  }, [location.search]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -97,8 +105,6 @@ const LoginForm = ({ onLoginSuccess }) => {
             Doctor
           </button>
         </div>
-        {successMessage && <div className="login-success">{successMessage}</div>}
-        {error && <div className="login-error-general">{error}</div>}
         <div className="login-field">
           <label className="login-label" htmlFor="email">Email</label>
         <input
@@ -138,6 +144,8 @@ const LoginForm = ({ onLoginSuccess }) => {
         <button type="submit" className="login-submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        {successMessage && <div className="login-success">{successMessage}</div>}
+        {error && <div className="login-error-general">{error}</div>}
         <p className="login-signup">
           Don't have an account? <a href="/register">Sign up</a>
         </p>

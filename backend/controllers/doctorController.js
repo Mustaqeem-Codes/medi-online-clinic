@@ -19,6 +19,7 @@ const registerDoctor = async (req, res) => {
       email,
       phone,
       password,
+      location,
       specialty,
       licenseNumber,
       license_number
@@ -27,10 +28,10 @@ const registerDoctor = async (req, res) => {
     const finalLicenseNumber = license_number || licenseNumber;
 
     // Basic validation
-    if (!name || !email || !phone || !password || !specialty || !finalLicenseNumber) {
+    if (!name || !email || !phone || !password || !specialty || !finalLicenseNumber || !location) {
       return res.status(400).json({
         success: false,
-        error: 'Please provide name, email, phone, password, specialty and license number'
+        error: 'Please provide name, email, phone, password, specialty, license number, and location'
       });
     }
 
@@ -64,7 +65,8 @@ const registerDoctor = async (req, res) => {
       phone,
       password,
       license_number: finalLicenseNumber,
-      specialty
+      specialty,
+      location
     });
 
     const token = generateToken(doctor.id);
@@ -78,6 +80,7 @@ const registerDoctor = async (req, res) => {
         phone: doctor.phone,
         license_number: doctor.license_number,
         specialty: doctor.specialty,
+        location: doctor.location,
         is_verified: doctor.is_verified,
         is_approved: doctor.is_approved,
         role: 'doctor',
@@ -140,6 +143,7 @@ const loginDoctor = async (req, res) => {
         phone: doctor.phone,
         license_number: doctor.license_number,
         specialty: doctor.specialty,
+        location: doctor.location,
         is_verified: doctor.is_verified,
         is_approved: doctor.is_approved,
         role: 'doctor',

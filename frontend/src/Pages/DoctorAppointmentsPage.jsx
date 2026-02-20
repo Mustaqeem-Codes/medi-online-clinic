@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DoctorSidebar from '../components/dashboard/DoctorSidebar';
+import AppointmentMessages from '../components/messages/AppointmentMessages';
 import '../styles/DoctorAppointmentsPage.css';
 
 const formatDate = (value) => {
@@ -22,11 +23,14 @@ const DoctorAppointmentsPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [updatingId, setUpdatingId] = useState(null);
+  const [activeAppointmentId, setActiveAppointmentId] = useState(null);
+  const [activeAppointmentStatus, setActiveAppointmentStatus] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      navigate('/login?role=doctor');
       return;
     }
 
@@ -66,6 +70,48 @@ const DoctorAppointmentsPage = () => {
     loadAppointments();
   }, [navigate]);
 
+  const handleStatusUpdate = async (appointmentId, nextStatus) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login?role=doctor');
+      return;
+    }
+
+    if (nextStatus === 'rejected') {
+      const confirmReject = window.confirm('Are you sure you want to reject this appointment?');
+      if (!confirmReject) return;
+    }
+
+    setUpdatingId(appointmentId);
+    setError('');
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}/status`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: nextStatus })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update appointment');
+      }
+
+      setAppointments((prev) =>
+        prev.map((item) =>
+          item.id === appointmentId ? { ...item, status: data.data.status } : item
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="mc-doctor-appointments">
       <DoctorSidebar />
@@ -91,13 +137,56 @@ const DoctorAppointmentsPage = () => {
                     <span>{item.date}</span>
                     <span>{item.time}</span>
                   </div>
-                  <span className={`mc-doctor-appointments__status mc-doctor-appointments__status--${item.status}`}>
-                    {item.status}
-                  </span>
+                  <div className="mc-doctor-appointments__actions">
+                    <span className={`mc-doctor-appointments__status mc-doctor-appointments__status--${item.status}`}>
+                      {item.status}
+                    </span>
+                    {item.status === 'pending' && (
+                      <div className="mc-doctor-appointments__buttons">
+                        <button
+                          type="button"
+                          className="mc-doctor-appointments__btn mc-doctor-appointments__btn--confirm"
+                          onClick={() => handleStatusUpdate(item.id, 'confirmed')}
+                          disabled={updatingId === item.id}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          type="button"
+                          className="mc-doctor-appointments__btn mc-doctor-appointments__btn--reject"
+                          onClick={() => handleStatusUpdate(item.id, 'rejected')}
+                          disabled={updatingId === item.id}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                    {['pending', 'confirmed', 'rejected'].includes(item.status) && (
+                      <button
+                        type="button"
+                        className="mc-doctor-appointments__btn mc-doctor-appointments__btn--message"
+                        onClick={() => {
+                          setActiveAppointmentId(item.id);
+                          setActiveAppointmentStatus(item.status);
+                        }}
+                      >
+                        Message
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           </section>
+        )}
+
+        {activeAppointmentId && (
+          <AppointmentMessages
+            appointmentId={activeAppointmentId}
+            appointmentStatus={activeAppointmentStatus}
+            role="doctor"
+            onClose={() => setActiveAppointmentId(null)}
+          />
         )}
       </main>
     </div>

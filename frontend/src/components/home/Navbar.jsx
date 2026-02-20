@@ -142,7 +142,7 @@ const Navbar = () => {
           {/* Single Auth Button - Links to Registration Page */}
           <div className="navbar-auth">
             {!isLoggedIn ? (
-              <Link to="/register" className="nav-btn nav-btn-primary">
+              <Link to="/login" className="nav-btn nav-btn-primary">
                 Sign Up / Login
               </Link>
             ) : (
@@ -214,7 +214,7 @@ const Navbar = () => {
             <div className="mobile-menu-auth">
               {!isLoggedIn ? (
                 <Link
-                  to="/register"
+                  to="/login"
                   className="mobile-btn mobile-btn-primary"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

@@ -13,7 +13,7 @@ const PatientDashboardPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      navigate('/login?role=patient');
       return;
     }
 
@@ -44,12 +44,6 @@ const PatientDashboardPage = () => {
     loadProfile();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
-
   const handleEditProfile = () => {
     navigate('/dashboard/patient/profile');
   };
@@ -66,7 +60,6 @@ const PatientDashboardPage = () => {
             </h1>
             <p className="mc-dashboard__subtitle">Here is a quick overview of your care.</p>
           </div>
-          <button onClick={handleLogout} className="mc-dashboard__logout">Logout</button>
         </header>
 
         {loading && <div className="mc-dashboard__state">Loading your profile...</div>}
@@ -109,6 +102,10 @@ const PatientDashboardPage = () => {
                 <div>
                   <span>Date of Birth</span>
                   <p>{profile.date_of_birth || 'Not provided'}</p>
+                </div>
+                <div>
+                  <span>Location</span>
+                  <p>{profile.location || 'Not provided'}</p>
                 </div>
               </div>
               <button

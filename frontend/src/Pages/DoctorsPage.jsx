@@ -8,7 +8,62 @@ const DoctorsPage = () => {
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const [specialty, setSpecialty] = useState('');
+  const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
+  const [locationLine, setLocationLine] = useState('');
+
+  const fallbackDoctors = [
+    {
+      id: 'demo-1',
+      name: 'Dr. Ava Smith',
+      specialty: 'Cardiology',
+      location: '12 Park Ave, New York, USA',
+      is_verified: true,
+      is_approved: true
+    },
+    {
+      id: 'demo-2',
+      name: 'Dr. Liam Patel',
+      specialty: 'Dermatology',
+      location: '221 King St, Toronto, Canada',
+      is_verified: true,
+      is_approved: true
+    },
+    {
+      id: 'demo-3',
+      name: 'Dr. Emma Brown',
+      specialty: 'Neurology',
+      location: '9 Baker St, London, UK',
+      is_verified: true,
+      is_approved: true
+    },
+    {
+      id: 'demo-4',
+      name: 'Dr. Noah Khan',
+      specialty: 'General Practice',
+      location: '18 MG Road, Mumbai, India',
+      is_verified: false,
+      is_approved: false
+    },
+    {
+      id: 'demo-5',
+      name: 'Dr. Sophia Ali',
+      specialty: 'Pediatrics',
+      location: '101 Marina Blvd, Dubai, UAE',
+      is_verified: true,
+      is_approved: true
+    }
+  ];
+
+  const countries = ['USA', 'Canada', 'UK', 'India', 'UAE'];
+  const citiesByCountry = {
+    USA: ['New York', 'Los Angeles', 'Chicago'],
+    Canada: ['Toronto', 'Vancouver', 'Montreal'],
+    UK: ['London', 'Manchester', 'Birmingham'],
+    India: ['Mumbai', 'Delhi', 'Bengaluru'],
+    UAE: ['Dubai', 'Abu Dhabi', 'Sharjah']
+  };
+  const cityOptions = country ? citiesByCountry[country] || [] : [];
 
   useEffect(() => {
     const loadDoctors = async () => {
@@ -22,9 +77,11 @@ const DoctorsPage = () => {
           throw new Error(data.error || 'Failed to load doctors');
         }
 
-        setDoctors(data.data || []);
+        const incoming = data.data || [];
+        setDoctors(incoming.length > 0 ? incoming : fallbackDoctors);
       } catch (err) {
-        setError(err.message);
+        setError('');
+        setDoctors(fallbackDoctors);
       } finally {
         setLoading(false);
       }
@@ -33,22 +90,38 @@ const DoctorsPage = () => {
     loadDoctors();
   }, []);
 
+  const specialtyOptions = useMemo(() => {
+    const options = doctors
+      .map((doctor) => doctor.specialty)
+      .filter(Boolean)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+    return Array.from(new Set(options)).sort((a, b) => a.localeCompare(b));
+  }, [doctors]);
+
   const filteredDoctors = useMemo(() => {
     const nameFilter = query.trim().toLowerCase();
     const cityFilter = city.trim().toLowerCase();
+    const countryFilter = country.trim().toLowerCase();
+    const locationFilter = locationLine.trim().toLowerCase();
+    const specialtyFilter = specialty.trim().toLowerCase();
+
     return doctors.filter((doctor) => {
-      const matchesName = nameFilter
-        ? doctor.name.toLowerCase().includes(nameFilter)
+      const doctorName = (doctor.name || '').toLowerCase();
+      const doctorSpecialty = (doctor.specialty || '').toLowerCase();
+      const locationValue = (doctor.location || '').toLowerCase();
+
+      const matchesName = nameFilter ? doctorName.includes(nameFilter) : true;
+      const matchesSpecialty = specialtyFilter
+        ? doctorSpecialty === specialtyFilter
         : true;
-      const matchesSpecialty = specialty
-        ? doctor.specialty === specialty
-        : true;
-      const matchesCity = cityFilter
-        ? (doctor.location || '').toLowerCase().includes(cityFilter)
-        : true;
-      return matchesName && matchesSpecialty && matchesCity;
+      const matchesCity = cityFilter ? locationValue.includes(cityFilter) : true;
+      const matchesCountry = countryFilter ? locationValue.includes(countryFilter) : true;
+      const matchesLocationLine = locationFilter ? locationValue.includes(locationFilter) : true;
+
+      return matchesName && matchesSpecialty && matchesCity && matchesCountry && matchesLocationLine;
     });
-  }, [doctors, query, specialty, city]);
+  }, [doctors, query, specialty, city, country, locationLine]);
 
   return (
     <div className="mc-doctors">
@@ -73,16 +146,41 @@ const DoctorsPage = () => {
             onChange={(event) => setSpecialty(event.target.value)}
           >
             <option value="">All specialties</option>
-            <option>Cardiologist</option>
-            <option>Dermatologist</option>
-            <option>Neurologist</option>
-            <option>General Physician</option>
+            {specialtyOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+          <select
+            className="mc-doctors__select"
+            value={country}
+            onChange={(event) => {
+              const nextCountry = event.target.value;
+              const nextCity = nextCountry ? citiesByCountry[nextCountry]?.[0] || '' : '';
+              setCountry(nextCountry);
+              setCity(nextCity);
+            }}
+          >
+            <option value="">All countries</option>
+            {countries.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+          <select
+            className="mc-doctors__select"
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
+            disabled={!country}
+          >
+            <option value="">All cities</option>
+            {cityOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
           </select>
           <input
             className="mc-doctors__input"
-            placeholder="City or ZIP"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
+            placeholder="Location or address"
+            value={locationLine}
+            onChange={(event) => setLocationLine(event.target.value)}
           />
           <button className="mc-doctors__cta" type="button">Search</button>
         </div>

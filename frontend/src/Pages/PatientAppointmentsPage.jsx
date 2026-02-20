@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PatientSidebar from '../components/dashboard/PatientSidebar';
-import AppointmentsList from '../components/dashboard/AppointmentsList';
+import AppointmentMessages from '../components/messages/AppointmentMessages';
 import '../styles/PatientAppointmentsPage.css';
 
 const formatDate = (value) => {
@@ -23,11 +23,13 @@ const PatientAppointmentsPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeAppointmentId, setActiveAppointmentId] = useState(null);
+  const [activeAppointmentStatus, setActiveAppointmentStatus] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      navigate('/login?role=patient');
       return;
     }
 
@@ -78,7 +80,55 @@ const PatientAppointmentsPage = () => {
 
         {loading && <div className="mc-patient-appointments__state">Loading appointments...</div>}
         {error && <div className="mc-patient-appointments__error">{error}</div>}
-        {!loading && !error && <AppointmentsList items={appointments} />}
+        {!loading && !error && (
+          <section className="mc-patient-appointments__card">
+            <div className="mc-patient-appointments__list">
+              {appointments.length === 0 ? (
+                <div className="mc-patient-appointments__empty">
+                  <p>No appointments scheduled yet.</p>
+                  <span>Start by booking a visit with a specialist.</span>
+                </div>
+              ) : (
+                appointments.map((item) => (
+                  <div key={item.id} className="mc-patient-appointments__item">
+                    <div>
+                      <p className="mc-patient-appointments__name">{item.doctor}</p>
+                      <span className="mc-patient-appointments__meta">{item.specialty}</span>
+                    </div>
+                    <div className="mc-patient-appointments__time">
+                      <span>{item.date}</span>
+                      <span>{item.time}</span>
+                    </div>
+                    <div className="mc-patient-appointments__actions">
+                      <span className={`mc-patient-appointments__status mc-patient-appointments__status--${item.status}`}>
+                        {item.status}
+                      </span>
+                      <button
+                        type="button"
+                        className="mc-patient-appointments__message"
+                        onClick={() => {
+                          setActiveAppointmentId(item.id);
+                          setActiveAppointmentStatus(item.status);
+                        }}
+                      >
+                        Message
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+        )}
+
+        {activeAppointmentId && (
+          <AppointmentMessages
+            appointmentId={activeAppointmentId}
+            appointmentStatus={activeAppointmentStatus}
+            role="patient"
+            onClose={() => setActiveAppointmentId(null)}
+          />
+        )}
       </main>
     </div>
   );

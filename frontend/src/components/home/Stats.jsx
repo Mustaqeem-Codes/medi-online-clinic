@@ -325,7 +325,11 @@ const Stats = () => {
               doctors have already made the switch to smarter, more convenient
               healthcare.
             </p>
-            <Link to="/frontend/src/Pages/RegisterPage.jsx" className="mc-stats__achievement-btn">
+            <Link to="/register?role=patient" className="mc-stats__achievement-btn">
+              Join Today
+              <span className="mc-stats__btn-icon">→</span>
+            </Link>
+            <Link to="/register?role=patient" className="mc-stats__achievement-btn">
               Get Started Today
               <span className="mc-stats__btn-icon">→</span>
             </Link>

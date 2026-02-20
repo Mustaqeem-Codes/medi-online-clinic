@@ -9,6 +9,9 @@ const DoctorRegisterForm = () => {
     name: '',
     email: '',
     phone: '',
+    country: 'USA',
+    city: 'New York',
+    locationLine: '',
     licenseNumber: '',
     specialty: '',
     password: '',
@@ -16,6 +19,7 @@ const DoctorRegisterForm = () => {
     agreeTerms: false
   });
   const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -33,6 +37,9 @@ const DoctorRegisterForm = () => {
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email';
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+    if (!formData.country) newErrors.country = 'Country is required';
+    if (!formData.city) newErrors.city = 'City is required';
+    if (!formData.locationLine.trim()) newErrors.locationLine = 'Location is required';
     if (!formData.licenseNumber.trim()) newErrors.licenseNumber = 'License number is required';
     if (!formData.specialty) newErrors.specialty = 'Specialty is required';
     if (!formData.password) newErrors.password = 'Password is required';
@@ -44,6 +51,7 @@ const DoctorRegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSuccess('');
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -52,6 +60,7 @@ const DoctorRegisterForm = () => {
     setIsLoading(true);
 
     try {
+      const locationValue = `${formData.locationLine}, ${formData.city}, ${formData.country}`;
       const response = await fetch('http://localhost:5000/api/doctors/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -60,6 +69,7 @@ const DoctorRegisterForm = () => {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
+          location: locationValue,
           license_number: formData.licenseNumber,
           specialty: formData.specialty
         })
@@ -73,7 +83,8 @@ const DoctorRegisterForm = () => {
 
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data));
-      navigate('/dashboard/doctor');
+      setSuccess('Account created successfully. Redirecting...');
+      setTimeout(() => navigate('/dashboard/doctor'), 700);
     } catch (error) {
       setErrors({ general: error.message });
     } finally {
@@ -87,12 +98,21 @@ const DoctorRegisterForm = () => {
     'Psychiatry', 'General Practice'
   ];
 
+  const countries = ['USA', 'Canada', 'UK', 'India', 'UAE'];
+  const citiesByCountry = {
+    USA: ['New York', 'Los Angeles', 'Chicago'],
+    Canada: ['Toronto', 'Vancouver', 'Montreal'],
+    UK: ['London', 'Manchester', 'Birmingham'],
+    India: ['Mumbai', 'Delhi', 'Bengaluru'],
+    UAE: ['Dubai', 'Abu Dhabi', 'Sharjah']
+  };
+
+  const cityOptions = citiesByCountry[formData.country] || [];
+
   return (
     <div className="doctor-form-container">
       <form onSubmit={handleSubmit} className="doctor-form">
         <h2 className="doctor-form-title">Create Doctor Account</h2>
-        {errors.general && <div className="doctor-error-general">{errors.general}</div>}
-
         <div className="doctor-field">
           <label className="doctor-label">Full Name</label>
           <input type="text" name="name" value={formData.name} onChange={handleChange} className={`doctor-input ${errors.name ? 'error' : ''}`} placeholder="Dr. John Doe" />
@@ -109,6 +129,53 @@ const DoctorRegisterForm = () => {
           <label className="doctor-label">Phone Number</label>
           <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className={`doctor-input ${errors.phone ? 'error' : ''}`} placeholder="+1 234 567 890" />
           {errors.phone && <span className="doctor-error">{errors.phone}</span>}
+        </div>
+
+        <div className="doctor-field">
+          <label className="doctor-label">Country</label>
+          <select
+            name="country"
+            value={formData.country}
+            onChange={(event) => {
+              const nextCountry = event.target.value;
+              const nextCity = citiesByCountry[nextCountry]?.[0] || '';
+              setFormData((prev) => ({
+                ...prev,
+                country: nextCountry,
+                city: nextCity
+              }));
+              if (errors.country) setErrors((prev) => ({ ...prev, country: '' }));
+            }}
+            className={`doctor-select ${errors.country ? 'error' : ''}`}
+            required
+          >
+            {countries.map((country) => (
+              <option key={country} value={country}>{country}</option>
+            ))}
+          </select>
+          {errors.country && <span className="doctor-error">{errors.country}</span>}
+        </div>
+
+        <div className="doctor-field">
+          <label className="doctor-label">City</label>
+          <select
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            className={`doctor-select ${errors.city ? 'error' : ''}`}
+            required
+          >
+            {cityOptions.map((city) => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+          {errors.city && <span className="doctor-error">{errors.city}</span>}
+        </div>
+
+        <div className="doctor-field">
+          <label className="doctor-label">Clinic Location</label>
+          <input type="text" name="locationLine" value={formData.locationLine} onChange={handleChange} className={`doctor-input ${errors.locationLine ? 'error' : ''}`} placeholder="Street address or area" />
+          {errors.locationLine && <span className="doctor-error">{errors.locationLine}</span>}
         </div>
 
         <div className="doctor-field">
@@ -149,6 +216,8 @@ const DoctorRegisterForm = () => {
         <button type="submit" className="doctor-submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Sign Up as Doctor'}
         </button>
+        {success && <div className="doctor-success-general">{success}</div>}
+        {errors.general && <div className="doctor-error-general">{errors.general}</div>}
       </form>
     </div>
   );

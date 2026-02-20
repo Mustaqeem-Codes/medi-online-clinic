@@ -63,6 +63,7 @@ const updateAppointmentStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const { id } = req.params;
+    const allowedStatuses = ['pending', 'confirmed', 'rejected', 'cancelled'];
 
     if (!status) {
       return res.status(400).json({
@@ -71,7 +72,14 @@ const updateAppointmentStatus = async (req, res) => {
       });
     }
 
-    const updated = await Appointment.updateStatus({ id, status });
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid status value'
+      });
+    }
+
+    const updated = await Appointment.updateStatus({ id, doctor_id: req.user.id, status });
     if (!updated) {
       return res.status(404).json({ success: false, error: 'Appointment not found' });
     }

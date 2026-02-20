@@ -41,14 +41,25 @@ class Appointment {
     return result.rows;
   }
 
-  static async updateStatus({ id, status }) {
+  static async findById(id) {
+    const query = `
+      SELECT id, patient_id, doctor_id, appointment_date, appointment_time,
+             status, reason, created_at, updated_at
+      FROM appointments
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+  }
+
+  static async updateStatus({ id, doctor_id, status }) {
     const query = `
       UPDATE appointments
       SET status = $1, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $2
+      WHERE id = $2 AND doctor_id = $3
       RETURNING id, patient_id, doctor_id, appointment_date, appointment_time, status, reason, updated_at
     `;
-    const result = await pool.query(query, [status, id]);
+    const result = await pool.query(query, [status, id, doctor_id]);
     return result.rows[0];
   }
 }

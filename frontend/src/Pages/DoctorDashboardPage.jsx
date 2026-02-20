@@ -43,12 +43,6 @@ const DoctorDashboardPage = () => {
     loadProfile();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
-
   return (
     <div className="mc-doctor-dashboard-layout">
       <DoctorSidebar />
@@ -61,7 +55,6 @@ const DoctorDashboardPage = () => {
             </h1>
             <p className="mc-doctor-dashboard__subtitle">Today at a glance.</p>
           </div>
-          <button onClick={handleLogout} className="mc-doctor-dashboard__logout">Logout</button>
         </header>
 
         {loading && <div className="mc-doctor-dashboard__state">Loading your profile...</div>}
