@@ -84,6 +84,8 @@ const createTables = async () => {
 
     await pool.query('ALTER TABLE doctors ADD COLUMN IF NOT EXISTS location TEXT');
   await pool.query('ALTER TABLE doctors ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE');
+    await pool.query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS availability_mode VARCHAR(20) DEFAULT 'custom'");
+    await pool.query("ALTER TABLE doctors ADD COLUMN IF NOT EXISTS availability_slots JSONB DEFAULT '[]'::jsonb");
 
     // Appointments table
     await pool.query(`

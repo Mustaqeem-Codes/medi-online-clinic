@@ -1,12 +1,14 @@
 // backend/routes/doctorRoutes.js
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const {
   registerDoctor,
   loginDoctor,
   getProfile,
-  listDoctors
+  listDoctors,
+  getDoctorById,
+  updateAvailability
 } = require('../controllers/doctorController');
 
 // @route   POST /api/doctors/register
@@ -28,5 +30,15 @@ router.post('/login', loginDoctor);
 // @desc    Get current doctor profile
 // @access  Private
 router.get('/profile', protect, getProfile);
+
+// @route   PUT /api/doctors/availability
+// @desc    Update current doctor's availability
+// @access  Private (doctor)
+router.put('/availability', protect, authorize('doctor'), updateAvailability);
+
+// @route   GET /api/doctors/:id
+// @desc    Get doctor details (public verified doctors only)
+// @access  Public
+router.get('/:id', getDoctorById);
 
 module.exports = router;

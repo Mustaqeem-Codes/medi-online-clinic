@@ -168,6 +168,7 @@ const AdminDashboardPage = () => {
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>License #</th>
                     <th>Specialty</th>
                     <th>Verified</th>
                     <th>Blocked</th>
@@ -179,6 +180,7 @@ const AdminDashboardPage = () => {
                     <tr key={doctor.id}>
                       <td>{doctor.name}</td>
                       <td>{doctor.email}</td>
+                      <td>{doctor.license_number || 'N/A'}</td>
                       <td>{doctor.specialty}</td>
                       <td>{doctor.is_approved ? 'Yes' : 'No'}</td>
                       <td>{doctor.is_blocked ? 'Yes' : 'No'}</td>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/BookingPage.css';
 import { API_BASE_URL } from '../config/api';
@@ -9,27 +9,78 @@ const BookingPage = () => {
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
   const [reason, setReason] = useState('');
+  const [doctor, setDoctor] = useState(null);
+  const [slots, setSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const times = ['9:00 AM', '10:30 AM', '1:00 PM', '3:30 PM'];
-
-  const to24Hour = (label) => {
-    const [time, period] = label.split(' ');
-    const [hours, minutes] = time.split(':');
-    let hour = Number(hours);
-    if (period === 'PM' && hour !== 12) hour += 12;
-    if (period === 'AM' && hour === 12) hour = 0;
-    return `${String(hour).padStart(2, '0')}:${minutes}:00`;
+  const toLabel = (value) => {
+    const [hours, minutes] = value.split(':');
+    const date = new Date();
+    date.setHours(Number(hours), Number(minutes || 0), 0, 0);
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   };
+
+  useEffect(() => {
+    const loadDoctor = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/doctors/${doctorId}`);
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to load doctor details');
+        }
+        setDoctor(data.data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    loadDoctor();
+  }, [doctorId]);
+
+  useEffect(() => {
+    if (!appointmentDate) {
+      setSlots([]);
+      setAppointmentTime('');
+      return;
+    }
+
+    const loadSlots = async () => {
+      setSlotsLoading(true);
+      setError('');
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/appointments/doctor/${doctorId}/slots?date=${appointmentDate}`
+        );
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to load available slots');
+        }
+        setSlots(data.data.available_slots || []);
+      } catch (err) {
+        setSlots([]);
+        setError(err.message);
+      } finally {
+        setSlotsLoading(false);
+      }
+    };
+
+    loadSlots();
+  }, [appointmentDate, doctorId]);
 
   const handleSubmit = async () => {
     setError('');
     setSuccess('');
 
     if (!appointmentDate || !appointmentTime) {
-      setError('Please select a date and time.');
+      setError('Please select a date and available time slot.');
+      return;
+    }
+
+    if (!reason.trim()) {
+      setError('Reason for appointment is required.');
       return;
     }
 
@@ -50,13 +101,18 @@ const BookingPage = () => {
         body: JSON.stringify({
           doctor_id: Number(doctorId),
           appointment_date: appointmentDate,
-          appointment_time: to24Hour(appointmentTime),
-          reason
+          appointment_time: `${appointmentTime}:00`,
+          reason: reason.trim()
         })
       });
 
       const data = await response.json();
       if (!response.ok) {
+        const availableSlots = data?.data?.available_slots;
+        if (Array.isArray(availableSlots)) {
+          setSlots(availableSlots);
+          throw new Error('Selected slot is no longer available. Please choose another available slot.');
+        }
         throw new Error(data.error || 'Failed to book appointment');
       }
 
@@ -81,9 +137,10 @@ const BookingPage = () => {
 
       <section className="mc-booking__card">
         <div className="mc-booking__summary">
-          <h2>Doctor #{doctorId}</h2>
-          <p>Specialty: Cardiology</p>
-          <p>Location: New York, NY</p>
+          <h2>{doctor ? doctor.name : `Doctor #${doctorId}`}</h2>
+          <p>Specialty: {doctor?.specialty || 'Loading...'}</p>
+          <p>Location: {doctor?.location || 'Not provided'}</p>
+          <p>Availability: {doctor?.availability_mode === '24_7' ? '24/7 (any hour)' : 'Scheduled slots'}</p>
         </div>
 
         {error && <div className="mc-booking__error">{error}</div>}
@@ -102,14 +159,18 @@ const BookingPage = () => {
           <div className="mc-booking__panel">
             <h3>Select Time</h3>
             <div className="mc-booking__slots">
-              {times.map((time) => (
+              {slotsLoading && <p>Loading available slots...</p>}
+              {!slotsLoading && appointmentDate && slots.length === 0 && (
+                <p>No slots available for this date.</p>
+              )}
+              {!slotsLoading && slots.map((time) => (
                 <button
                   key={time}
                   type="button"
                   className={appointmentTime === time ? 'is-active' : ''}
                   onClick={() => setAppointmentTime(time)}
                 >
-                  {time}
+                  {toLabel(time)}
                 </button>
               ))}
             </div>
@@ -117,7 +178,7 @@ const BookingPage = () => {
         </div>
 
         <div className="mc-booking__panel">
-          <h3>Reason for visit (optional)</h3>
+          <h3>Reason for visit (required)</h3>
           <textarea
             className="mc-booking__textarea"
             value={reason}

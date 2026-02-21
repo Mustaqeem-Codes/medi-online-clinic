@@ -8,6 +8,7 @@ import { API_BASE_URL } from '../config/api';
 const PatientDashboardPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -23,18 +24,41 @@ const PatientDashboardPage = () => {
       setError('');
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/patients/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const [profileRes, appointmentsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/patients/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }),
+          fetch(`${API_BASE_URL}/api/appointments/patient`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          })
+        ]);
 
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to load profile');
+        const [profileData, appointmentsData] = await Promise.all([
+          profileRes.json(),
+          appointmentsRes.json()
+        ]);
+
+        if (!profileRes.ok) {
+          throw new Error(profileData.error || 'Failed to load profile');
+        }
+        if (!appointmentsRes.ok) {
+          throw new Error(appointmentsData.error || 'Failed to load appointments');
         }
 
-        setProfile(data.data);
+        setProfile(profileData.data);
+        const mapped = (appointmentsData.data || []).slice(0, 5).map((item) => ({
+          id: item.id,
+          doctor: item.doctor_name,
+          specialty: item.doctor_specialty,
+          date: item.appointment_date,
+          time: item.appointment_time,
+          status: item.status || 'pending'
+        }));
+        setAppointments(mapped);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -69,24 +93,7 @@ const PatientDashboardPage = () => {
         {!loading && !error && (
           <div className="mc-dashboard__grid">
             <AppointmentsList
-              items={[
-                {
-                  id: 1,
-                  doctor: 'Dr. Smith',
-                  specialty: 'Cardiology',
-                  date: 'May 20, 2026',
-                  time: '10:00 AM',
-                  status: 'confirmed'
-                },
-                {
-                  id: 2,
-                  doctor: 'Dr. Johnson',
-                  specialty: 'Dermatology',
-                  date: 'May 22, 2026',
-                  time: '2:00 PM',
-                  status: 'pending'
-                }
-              ]}
+              items={appointments}
             />
 
             <section className="mc-dashboard__card">

@@ -4,9 +4,29 @@ import DoctorSidebar from '../components/dashboard/DoctorSidebar';
 import '../styles/DoctorDashboardPage.css';
 import { API_BASE_URL } from '../config/api';
 
+const formatDate = (value) => {
+  if (!value) return 'TBD';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+};
+
+const formatTime = (value) => {
+  if (!value) return 'TBD';
+  const [hours, minutes] = value.split(':');
+  const date = new Date();
+  date.setHours(Number(hours), Number(minutes || 0), 0, 0);
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+const DEFAULT_CUSTOM_SLOTS = '09:00,10:00,11:00,14:00,15:00';
+
 const DoctorDashboardPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [availabilityMode, setAvailabilityMode] = useState('custom');
+  const [availabilitySlotsInput, setAvailabilitySlotsInput] = useState(DEFAULT_CUSTOM_SLOTS);
+  const [savingAvailability, setSavingAvailability] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -22,18 +42,38 @@ const DoctorDashboardPage = () => {
       setError('');
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/doctors/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const [profileRes, apptRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/doctors/profile`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }),
+          fetch(`${API_BASE_URL}/api/appointments/doctor`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        ]);
 
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to load profile');
+        const [profileData, apptData] = await Promise.all([profileRes.json(), apptRes.json()]);
+        if (!profileRes.ok) {
+          throw new Error(profileData.error || 'Failed to load profile');
+        }
+        if (!apptRes.ok) {
+          throw new Error(apptData.error || 'Failed to load appointments');
         }
 
-        setProfile(data.data);
+        setProfile(profileData.data);
+
+        const profileSlots = Array.isArray(profileData.data?.availability_slots)
+          ? profileData.data.availability_slots
+          : [];
+        if (profileData.data?.availability_mode === '24_7') {
+          setAvailabilityMode('24_7');
+        } else {
+          setAvailabilityMode('custom');
+          if (profileSlots.length > 0) {
+            setAvailabilitySlotsInput(profileSlots.join(','));
+          }
+        }
+
+        setAppointments(apptData.data || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -43,6 +83,56 @@ const DoctorDashboardPage = () => {
 
     loadProfile();
   }, [navigate]);
+
+  const handleSaveAvailability = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login?role=doctor');
+      return;
+    }
+
+    setSavingAvailability(true);
+    setError('');
+
+    try {
+      const slots = availabilitySlotsInput
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+      const response = await fetch(`${API_BASE_URL}/api/doctors/availability`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          availability_mode: availabilityMode,
+          availability_slots: availabilityMode === '24_7' ? [] : slots
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save availability');
+      }
+
+      setProfile((prev) => prev ? {
+        ...prev,
+        availability_mode: data.data.availability_mode,
+        availability_slots: data.data.availability_slots,
+        should_set_availability: false
+      } : prev);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingAvailability(false);
+    }
+  };
+
+  const upcomingAppointments = appointments
+    .filter((item) => ['pending', 'confirmed'].includes(item.status))
+    .slice(0, 5);
 
   return (
     <div className="mc-doctor-dashboard-layout">
@@ -66,21 +156,76 @@ const DoctorDashboardPage = () => {
             <section className="mc-doctor-dashboard__card">
               <h2>Upcoming Appointments</h2>
               <ul className="mc-doctor-dashboard__list">
-                <li>10:00 AM - Emily Carter (Cardiology)</li>
-                <li>1:30 PM - Michael Brown (Dermatology)</li>
+                {upcomingAppointments.length === 0 ? (
+                  <li>No upcoming appointments.</li>
+                ) : upcomingAppointments.map((item) => (
+                  <li key={item.id}>
+                    {formatDate(item.appointment_date)} · {formatTime(item.appointment_time)} - {item.patient_name}
+                  </li>
+                ))}
               </ul>
             </section>
 
             <section className="mc-doctor-dashboard__card">
-              <h2>Patient Queue</h2>
-              <p className="mc-doctor-dashboard__muted">3 patients waiting for review.</p>
-              <button className="mc-doctor-dashboard__button">Review Requests</button>
+              <h2>Verification & Availability</h2>
+              {!profile?.is_approved ? (
+                <p className="mc-doctor-dashboard__muted">Your profile is pending admin verification.</p>
+              ) : (
+                <>
+                  <p className="mc-doctor-dashboard__muted">
+                    {profile?.should_set_availability
+                      ? 'You are verified. Please set your timetable and availability so patients can book appointments.'
+                      : 'Your timetable is configured and visible to patients.'}
+                  </p>
+
+                  <div className="mc-doctor-dashboard__actions">
+                    <label>
+                      <input
+                        type="radio"
+                        name="availabilityMode"
+                        value="custom"
+                        checked={availabilityMode === 'custom'}
+                        onChange={() => setAvailabilityMode('custom')}
+                      />
+                      Custom slots
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="availabilityMode"
+                        value="24_7"
+                        checked={availabilityMode === '24_7'}
+                        onChange={() => setAvailabilityMode('24_7')}
+                      />
+                      24/7
+                    </label>
+                  </div>
+
+                  {availabilityMode === 'custom' && (
+                    <input
+                      type="text"
+                      className="mc-doctor-dashboard__input"
+                      value={availabilitySlotsInput}
+                      onChange={(event) => setAvailabilitySlotsInput(event.target.value)}
+                      placeholder="e.g. 09:00,10:30,14:00"
+                    />
+                  )}
+
+                  <button
+                    className="mc-doctor-dashboard__button"
+                    onClick={handleSaveAvailability}
+                    disabled={savingAvailability}
+                  >
+                    {savingAvailability ? 'Saving...' : 'Save Availability'}
+                  </button>
+                </>
+              )}
             </section>
 
             <section className="mc-doctor-dashboard__card">
-              <h2>Earnings</h2>
-              <p className="mc-doctor-dashboard__metric">$1,240</p>
-              <span className="mc-doctor-dashboard__muted">This month</span>
+              <h2>Summary</h2>
+              <p className="mc-doctor-dashboard__metric">{appointments.length}</p>
+              <span className="mc-doctor-dashboard__muted">Total appointments on your account</span>
             </section>
           </div>
         )}

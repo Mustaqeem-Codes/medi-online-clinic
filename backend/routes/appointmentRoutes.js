@@ -4,10 +4,16 @@ const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const {
   createAppointment,
+  getDoctorAvailableSlots,
   getPatientAppointments,
   getDoctorAppointments,
   updateAppointmentStatus
 } = require('../controllers/appointmentController');
+
+// @route   GET /api/appointments/doctor/:doctorId/slots?date=YYYY-MM-DD
+// @desc    Get doctor available slots for a specific date
+// @access  Public
+router.get('/doctor/:doctorId/slots', getDoctorAvailableSlots);
 
 // @route   POST /api/appointments
 // @desc    Create appointment

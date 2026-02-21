@@ -9,62 +9,7 @@ const DoctorsPage = () => {
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const [specialty, setSpecialty] = useState('');
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
   const [locationLine, setLocationLine] = useState('');
-
-  const fallbackDoctors = [
-    {
-      id: 'demo-1',
-      name: 'Dr. Ava Smith',
-      specialty: 'Cardiology',
-      location: '12 Park Ave, New York, USA',
-      is_verified: true,
-      is_approved: true
-    },
-    {
-      id: 'demo-2',
-      name: 'Dr. Liam Patel',
-      specialty: 'Dermatology',
-      location: '221 King St, Toronto, Canada',
-      is_verified: true,
-      is_approved: true
-    },
-    {
-      id: 'demo-3',
-      name: 'Dr. Emma Brown',
-      specialty: 'Neurology',
-      location: '9 Baker St, London, UK',
-      is_verified: true,
-      is_approved: true
-    },
-    {
-      id: 'demo-4',
-      name: 'Dr. Noah Khan',
-      specialty: 'General Practice',
-      location: '18 MG Road, Mumbai, India',
-      is_verified: false,
-      is_approved: false
-    },
-    {
-      id: 'demo-5',
-      name: 'Dr. Sophia Ali',
-      specialty: 'Pediatrics',
-      location: '101 Marina Blvd, Dubai, UAE',
-      is_verified: true,
-      is_approved: true
-    }
-  ];
-
-  const countries = ['USA', 'Canada', 'UK', 'India', 'UAE'];
-  const citiesByCountry = {
-    USA: ['New York', 'Los Angeles', 'Chicago'],
-    Canada: ['Toronto', 'Vancouver', 'Montreal'],
-    UK: ['London', 'Manchester', 'Birmingham'],
-    India: ['Mumbai', 'Delhi', 'Bengaluru'],
-    UAE: ['Dubai', 'Abu Dhabi', 'Sharjah']
-  };
-  const cityOptions = country ? citiesByCountry[country] || [] : [];
 
   useEffect(() => {
     const loadDoctors = async () => {
@@ -78,11 +23,10 @@ const DoctorsPage = () => {
           throw new Error(data.error || 'Failed to load doctors');
         }
 
-        const incoming = data.data || [];
-        setDoctors(incoming.length > 0 ? incoming : fallbackDoctors);
+        setDoctors(data.data || []);
       } catch (err) {
-        setError('');
-        setDoctors(fallbackDoctors);
+        setError(err.message || 'Failed to load doctors');
+        setDoctors([]);
       } finally {
         setLoading(false);
       }
@@ -102,8 +46,6 @@ const DoctorsPage = () => {
 
   const filteredDoctors = useMemo(() => {
     const nameFilter = query.trim().toLowerCase();
-    const cityFilter = city.trim().toLowerCase();
-    const countryFilter = country.trim().toLowerCase();
     const locationFilter = locationLine.trim().toLowerCase();
     const specialtyFilter = specialty.trim().toLowerCase();
 
@@ -116,13 +58,11 @@ const DoctorsPage = () => {
       const matchesSpecialty = specialtyFilter
         ? doctorSpecialty === specialtyFilter
         : true;
-      const matchesCity = cityFilter ? locationValue.includes(cityFilter) : true;
-      const matchesCountry = countryFilter ? locationValue.includes(countryFilter) : true;
       const matchesLocationLine = locationFilter ? locationValue.includes(locationFilter) : true;
 
-      return matchesName && matchesSpecialty && matchesCity && matchesCountry && matchesLocationLine;
+      return matchesName && matchesSpecialty && matchesLocationLine;
     });
-  }, [doctors, query, specialty, city, country, locationLine]);
+  }, [doctors, query, specialty, locationLine]);
 
   return (
     <div className="mc-doctors">
@@ -151,39 +91,12 @@ const DoctorsPage = () => {
               <option key={option} value={option}>{option}</option>
             ))}
           </select>
-          <select
-            className="mc-doctors__select"
-            value={country}
-            onChange={(event) => {
-              const nextCountry = event.target.value;
-              const nextCity = nextCountry ? citiesByCountry[nextCountry]?.[0] || '' : '';
-              setCountry(nextCountry);
-              setCity(nextCity);
-            }}
-          >
-            <option value="">All countries</option>
-            {countries.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-          <select
-            className="mc-doctors__select"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-            disabled={!country}
-          >
-            <option value="">All cities</option>
-            {cityOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
           <input
             className="mc-doctors__input"
             placeholder="Location or address"
             value={locationLine}
             onChange={(event) => setLocationLine(event.target.value)}
           />
-          <button className="mc-doctors__cta" type="button">Search</button>
         </div>
       </header>
 
@@ -204,8 +117,7 @@ const DoctorsPage = () => {
                   <span>{doctor.location || 'Location TBD'}</span>
                 </div>
                 <div className="mc-doctors__meta">
-                  <span>Status: {doctor.is_approved ? 'Approved' : 'Pending'}</span>
-                  <span>Verified: {doctor.is_verified ? 'Yes' : 'No'}</span>
+                  <span>Status: Verified</span>
                 </div>
                 <Link to={`/doctors/${doctor.id}`} className="mc-doctors__book">
                   View Profile

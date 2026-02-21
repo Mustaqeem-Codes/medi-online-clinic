@@ -14,7 +14,7 @@ class Doctor {
     const query = `
       INSERT INTO doctors (name, email, phone, password_hash, license_number, specialty, location)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id, name, email, phone, license_number, specialty, location, is_verified, is_approved, is_blocked, created_at
+      RETURNING id, name, email, phone, license_number, specialty, location, is_verified, is_approved, is_blocked, availability_mode, availability_slots, created_at
     `;
     const values = [name, email, phone, password_hash, license_number, specialty, location || null];
 
@@ -58,7 +58,26 @@ class Doctor {
 
   // Find doctor by ID
   static async findById(id) {
-    const query = 'SELECT id, name, email, phone, license_number, specialty, location, is_verified, is_approved, is_blocked, created_at FROM doctors WHERE id = $1';
+    const query = `
+      SELECT id, name, email, phone, license_number, specialty, location,
+             is_verified, is_approved, is_blocked, availability_mode, availability_slots, created_at
+      FROM doctors
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+  }
+
+  // Find doctor by ID for public listing (verified + approved + not blocked)
+  static async findPublicById(id) {
+    const query = `
+      SELECT id, name, specialty, location, is_verified, is_approved, availability_mode, availability_slots
+      FROM doctors
+      WHERE id = $1
+        AND is_verified = true
+        AND is_approved = true
+        AND is_blocked = false
+    `;
     const result = await pool.query(query, [id]);
     return result.rows[0];
   }
@@ -66,12 +85,28 @@ class Doctor {
   // List all doctors (public fields)
   static async findAll() {
     const query = `
-      SELECT id, name, specialty, location, is_verified, is_approved, is_blocked
+      SELECT id, name, specialty, location, is_verified, is_approved, availability_mode, availability_slots
       FROM doctors
+      WHERE is_verified = true
+        AND is_approved = true
+        AND is_blocked = false
       ORDER BY created_at DESC
     `;
     const result = await pool.query(query);
     return result.rows;
+  }
+
+  static async updateAvailability({ id, availability_mode, availability_slots }) {
+    const query = `
+      UPDATE doctors
+      SET availability_mode = $1,
+          availability_slots = $2::jsonb,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $3
+      RETURNING id, availability_mode, availability_slots, is_verified, is_approved
+    `;
+    const result = await pool.query(query, [availability_mode, JSON.stringify(availability_slots || []), id]);
+    return result.rows[0];
   }
 
   // Verify password

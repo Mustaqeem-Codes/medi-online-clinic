@@ -52,6 +52,46 @@ class Appointment {
     return result.rows[0];
   }
 
+  static async isDoctorBookable(doctor_id) {
+    const query = `
+      SELECT id
+      FROM doctors
+      WHERE id = $1
+        AND is_verified = true
+        AND is_approved = true
+        AND is_blocked = false
+    `;
+    const result = await pool.query(query, [doctor_id]);
+    return result.rows.length > 0;
+  }
+
+  static async isSlotBooked({ doctor_id, appointment_date, appointment_time }) {
+    const query = `
+      SELECT id
+      FROM appointments
+      WHERE doctor_id = $1
+        AND appointment_date = $2
+        AND appointment_time = $3
+        AND status IN ('pending', 'confirmed')
+      LIMIT 1
+    `;
+    const result = await pool.query(query, [doctor_id, appointment_date, appointment_time]);
+    return result.rows.length > 0;
+  }
+
+  static async getBookedSlots({ doctor_id, appointment_date }) {
+    const query = `
+      SELECT appointment_time
+      FROM appointments
+      WHERE doctor_id = $1
+        AND appointment_date = $2
+        AND status IN ('pending', 'confirmed')
+      ORDER BY appointment_time ASC
+    `;
+    const result = await pool.query(query, [doctor_id, appointment_date]);
+    return result.rows.map((row) => row.appointment_time);
+  }
+
   static async updateStatus({ id, doctor_id, status }) {
     const query = `
       UPDATE appointments

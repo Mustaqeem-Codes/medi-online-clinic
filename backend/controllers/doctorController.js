@@ -2,6 +2,27 @@
 const Doctor = require('../models/Doctor');
 const jwt = require('jsonwebtoken');
 
+const normalizeAvailabilitySlots = (slots) => {
+  if (!Array.isArray(slots)) return [];
+
+  const normalized = slots
+    .map((slot) => String(slot || '').trim())
+    .filter(Boolean)
+    .map((slot) => {
+      const parts = slot.split(':').map((value) => value.trim());
+      if (parts.length < 2) return null;
+      const hour = Number(parts[0]);
+      const minute = Number(parts[1]);
+      if (!Number.isInteger(hour) || !Number.isInteger(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+        return null;
+      }
+      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    })
+    .filter(Boolean);
+
+  return Array.from(new Set(normalized)).sort();
+};
+
 // Generate JWT token
 const generateToken = (id) => {
   return jwt.sign({ id, role: 'doctor' }, process.env.JWT_SECRET, {
@@ -84,6 +105,8 @@ const registerDoctor = async (req, res) => {
         is_verified: doctor.is_verified,
         is_approved: doctor.is_approved,
         is_blocked: doctor.is_blocked,
+        availability_mode: doctor.availability_mode,
+        availability_slots: doctor.availability_slots,
         role: 'doctor',
         token
       }
@@ -155,6 +178,8 @@ const loginDoctor = async (req, res) => {
         is_verified: doctor.is_verified,
         is_approved: doctor.is_approved,
         is_blocked: doctor.is_blocked,
+        availability_mode: doctor.availability_mode,
+        availability_slots: doctor.availability_slots,
         role: 'doctor',
         token
       }
@@ -180,13 +205,77 @@ const getProfile = async (req, res) => {
         error: 'Doctor not found'
       });
     }
-    res.json({ success: true, data: doctor });
+    const shouldSetAvailability = Boolean(doctor.is_verified && doctor.is_approved) &&
+      !(doctor.availability_mode === '24_7' || (Array.isArray(doctor.availability_slots) && doctor.availability_slots.length > 0));
+
+    res.json({
+      success: true,
+      data: {
+        ...doctor,
+        should_set_availability: shouldSetAvailability
+      }
+    });
   } catch (error) {
     console.error('Doctor profile error:', error);
     res.status(500).json({
       success: false,
       error: 'Server error'
     });
+  }
+};
+
+// @desc    Get public doctor details
+// @route   GET /api/doctors/:id
+// @access  Public
+const getDoctorById = async (req, res) => {
+  try {
+    const doctorId = Number(req.params.id);
+    if (!Number.isInteger(doctorId)) {
+      return res.status(400).json({ success: false, error: 'Invalid doctor id' });
+    }
+
+    const doctor = await Doctor.findPublicById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, error: 'Doctor not found' });
+    }
+
+    res.json({ success: true, data: doctor });
+  } catch (error) {
+    console.error('Get doctor detail error:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+};
+
+// @desc    Update doctor availability
+// @route   PUT /api/doctors/availability
+// @access  Private (doctor)
+const updateAvailability = async (req, res) => {
+  try {
+    const { availability_mode, availability_slots } = req.body;
+    const mode = availability_mode === '24_7' ? '24_7' : 'custom';
+    const slots = mode === '24_7' ? [] : normalizeAvailabilitySlots(availability_slots);
+
+    if (mode === 'custom' && slots.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide at least one slot for custom availability'
+      });
+    }
+
+    const updated = await Doctor.updateAvailability({
+      id: req.user.id,
+      availability_mode: mode,
+      availability_slots: slots
+    });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, error: 'Doctor not found' });
+    }
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error('Update availability error:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
   }
 };
 
@@ -207,5 +296,7 @@ module.exports = {
   registerDoctor,
   loginDoctor,
   getProfile,
-  listDoctors
+  listDoctors,
+  getDoctorById,
+  updateAvailability
 };

@@ -33,6 +33,9 @@ const PatientSidebar = () => {
         <NavLink to="/dashboard/patient/messages" className="mc-patient-sidebar__link">
           Messages
         </NavLink>
+        <NavLink to="/doctors" className="mc-patient-sidebar__link">
+          Book Appointment
+        </NavLink>
       </nav>
 
       <div className="mc-patient-sidebar__footer">
