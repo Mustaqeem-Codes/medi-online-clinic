@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DoctorSidebar from '../components/dashboard/DoctorSidebar';
 import '../styles/DoctorDashboardPage.css';
+import { API_BASE_URL } from '../config/api';
 
 const DoctorDashboardPage = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const DoctorDashboardPage = () => {
       setError('');
 
       try {
-        const response = await fetch('http://localhost:5000/api/doctors/profile', {
+        const response = await fetch(`${API_BASE_URL}/api/doctors/profile`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

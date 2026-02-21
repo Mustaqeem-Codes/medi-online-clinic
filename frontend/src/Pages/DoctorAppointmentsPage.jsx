@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DoctorSidebar from '../components/dashboard/DoctorSidebar';
 import AppointmentMessages from '../components/messages/AppointmentMessages';
 import '../styles/DoctorAppointmentsPage.css';
+import { API_BASE_URL } from '../config/api';
 
 const formatDate = (value) => {
   if (!value) return 'TBD';
@@ -39,7 +40,7 @@ const DoctorAppointmentsPage = () => {
       setError('');
 
       try {
-        const response = await fetch('http://localhost:5000/api/appointments/doctor', {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/doctor`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -86,7 +87,7 @@ const DoctorAppointmentsPage = () => {
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}/status`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

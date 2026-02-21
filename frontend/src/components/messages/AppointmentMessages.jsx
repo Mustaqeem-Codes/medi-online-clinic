@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import '../../styles/messages/AppointmentMessages.css';
+import { API_BASE_URL } from '../../config/api';
 
 const formatTimestamp = (value) => {
   if (!value) return '';
@@ -39,7 +40,7 @@ const AppointmentMessages = ({ appointmentId, appointmentStatus, role, onClose }
       setLoading(true);
       setError('');
       try {
-        const response = await fetch(`http://localhost:5000/api/messages/appointments/${appointmentId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/messages/appointments/${appointmentId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -77,7 +78,7 @@ const AppointmentMessages = ({ appointmentId, appointmentStatus, role, onClose }
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/messages/appointments/${appointmentId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/messages/appointments/${appointmentId}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

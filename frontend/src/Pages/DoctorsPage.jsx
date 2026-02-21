@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/DoctorsPage.css';
+import { API_BASE_URL } from '../config/api';
 
 const DoctorsPage = () => {
   const [doctors, setDoctors] = useState([]);
@@ -71,7 +72,7 @@ const DoctorsPage = () => {
       setError('');
 
       try {
-        const response = await fetch('http://localhost:5000/api/doctors');
+        const response = await fetch(`${API_BASE_URL}/api/doctors`);
         const data = await response.json();
         if (!response.ok) {
           throw new Error(data.error || 'Failed to load doctors');

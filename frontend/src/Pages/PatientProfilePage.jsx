@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PatientSidebar from '../components/dashboard/PatientSidebar';
 import '../styles/PatientProfilePage.css';
+import { API_BASE_URL } from '../config/api';
 
 const PatientProfilePage = () => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const PatientProfilePage = () => {
       setError('');
 
       try {
-        const response = await fetch('http://localhost:5000/api/patients/profile', {
+        const response = await fetch(`${API_BASE_URL}/api/patients/profile`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -109,7 +110,7 @@ const PatientProfilePage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/patients/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/patients/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

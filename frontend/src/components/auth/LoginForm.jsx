@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/auth/LoginForm.css';
+import { API_BASE_URL } from '../../config/api';
 
 const LoginForm = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const LoginForm = ({ onLoginSuccess }) => {
     if (formData.phone) payload.phone = formData.phone;
 
     try {
-      const endpoint = role === 'doctor' ? 'http://localhost:5000/api/doctors/login' : 'http://localhost:5000/api/patients/login';
+      const endpoint = role === 'doctor' ? `${API_BASE_URL}/api/doctors/login` : `${API_BASE_URL}/api/patients/login`;
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

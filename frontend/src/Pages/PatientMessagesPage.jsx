@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PatientSidebar from '../components/dashboard/PatientSidebar';
 import AppointmentMessages from '../components/messages/AppointmentMessages';
 import '../styles/PatientMessagesPage.css';
+import { API_BASE_URL } from '../config/api';
 
 const PatientMessagesPage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const PatientMessagesPage = () => {
       setError('');
 
       try {
-        const response = await fetch('http://localhost:5000/api/appointments/patient', {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/patient`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
